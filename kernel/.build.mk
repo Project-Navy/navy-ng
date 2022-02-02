@@ -18,6 +18,7 @@ KERNEL_CFLAGS = \
 	-mno-red-zone \
 	-mcmodel=kernel \
 	-DKERNEL \
+	-Ikernel/
 
 KERNEL_LDFLAGS =  \
     -nostdlib \
@@ -27,7 +28,11 @@ KERNEL_LDFLAGS =  \
 
 KERNEL_SRC = \
 	$(wildcard kernel/*.c) \
-	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) 
+	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
+	lib/ansi/string.c \
+	lib/navy/fmt.c \
+	lib/navy/itoa.c \
+	lib/navy/debug.c \
 
 
 KERNEL_OBJ = $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))

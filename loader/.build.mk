@@ -29,8 +29,8 @@ BINS += $(LOADER)
 
 $(LOADER): $(LOADER_OBJS)
 	@$(MKCWD)
-	$(CROSS_LD) -o $@ $^ $(LOADER_LDFLAGS)
+	$(LD) -o $@ $^ $(LOADER_LDFLAGS)
 
 $(BINDIR_LOADER)/%.c.o: %.c
 	@$(MKCWD)
-	$(CROSS_CC) -c -o $@ $< $(LOADER_CFLAGS)
+	$(CC) -c -o $@ $< $(LOADER_CFLAGS)

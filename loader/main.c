@@ -1,5 +1,3 @@
-#include "Uefi/UefiBaseType.h"
-#include <navy/debug.h>
 #include <navy/fmt.h>
 #include <navy/elf.h>
 #include <string.h>
@@ -41,7 +39,7 @@ static VOID cstr_stdout(char const *s)
 
 static VOID log_impl(size_t line_nbr, char const *format, struct fmt_args args)
 {
-    print_format(cstr_stdout, "LOADER: {} ", line_nbr);
+    print_format(cstr_stdout, "Navy Loader: {} ", line_nbr);
     PRINT_FORMAT(cstr_stdout, format, args);
     cstr_stdout("\r\n");
 }
@@ -179,7 +177,6 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *SystemTable)
 
     ConOut->ClearScreen(ConOut);
     check_status$(Bs->SetWatchdogTimer(0, 0, 0, NULL));
-    log$("Navy Loader !");
 
     EFI_LOADED_IMAGE *image_loader;
     EFI_GUID img_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;

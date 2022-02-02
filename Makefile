@@ -6,6 +6,8 @@ CONFIG_ARCH ?= x86_64
 
 CC := clang
 LD := clang
+AR := llvm-ar
+ARFLAGS := rcs
 
 STD_CFLAGS = \
 	-Wall \

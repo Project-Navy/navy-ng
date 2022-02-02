@@ -4,5 +4,6 @@
 -Wextra
 -Werror
 -Iloader/efi/
+-Ikernel/
 -D__x86_64__
 -DKERNEL

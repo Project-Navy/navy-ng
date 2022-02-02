@@ -1,8 +1,8 @@
-#include <navy/fmt.h>
+#include <navy/debug.h>
 #include <stdio.h>
 
 int main(void)
 {
-    print_format(puts, "Hello, World !\n");
+    log$("Hello, World !");
     return 0;
 }
