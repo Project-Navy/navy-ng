@@ -1,27 +1,27 @@
-ENTRY(_kstart)
+ENTRY(_start)
 
 SECTIONS
 {
-    . = 0xffffffff80200000;
+	. = 4M;
 
-    .text : ALIGN(4K)
-    {
-        *(.text*)
-    }
+	.text : ALIGN(4K)
+	{
+		*(.text)
+	}
 
-    .rodata : ALIGN(4K)
-    {
-        *(.rodata*)
-    }
+	.rodata : ALIGN(4K)
+	{
+		*(.rodata)
+	}
 
-    .data : ALIGN(4K)
-    {
-        *(.data*)
-    }
+	.data : ALIGN(4K)
+	{
+		*(.data)
+	}
 
-    .bss : ALIGN(4K)
-    {
-        *(COMMON)
-        *(.bss*)
-    }
+	.bss : ALIGN(4K)
+	{
+		*(COMMON)
+		*(.bss)
+	}
 }

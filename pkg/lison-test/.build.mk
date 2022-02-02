@@ -1,0 +1,2 @@
+LISON_NAME = lison-test
+HOST_PKGS += LISON

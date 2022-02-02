@@ -1,3 +1,4 @@
+#include "Uefi/UefiBaseType.h"
 #include <navy/debug.h>
 #include <navy/fmt.h>
 #include <navy/elf.h>
@@ -15,10 +16,7 @@
 
 #define align_up$(__addr, __align) (((__addr) + (__align)-1) & ~((__align)-1))
 #define log$(FORMAT, ...) \
-	log_impl(__FILENAME__, __LINE__, FORMAT, PRINT_ARGS(__VA_ARGS__));
-
-#define __FILENAME__  \
-    (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
+	log_impl(__LINE__, FORMAT, PRINT_ARGS(__VA_ARGS__));
 
 #define check_status$(status)                           \
     if (status != EFI_SUCCESS)                          \
@@ -31,7 +29,7 @@ static EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
 static EFI_BOOT_SERVICES *Bs;
 static EFI_MEMORY_TYPE gKernelAndModulesMemoryType = 0x80000000;
 
-static void cstr_stdout(char const *s)
+static VOID cstr_stdout(char const *s)
 {
     while (*s)
     {
@@ -41,9 +39,9 @@ static void cstr_stdout(char const *s)
     }
 }
 
-static VOID log_impl(char const *filename, size_t line_nbr, char const *format, struct fmt_args args)
+static VOID log_impl(size_t line_nbr, char const *format, struct fmt_args args)
 {
-    print_format(cstr_stdout, "{}:{} ", filename, line_nbr);
+    print_format(cstr_stdout, "LOADER: {} ", line_nbr);
     PRINT_FORMAT(cstr_stdout, format, args);
     cstr_stdout("\r\n");
 }
@@ -106,10 +104,7 @@ static BOOLEAN GrowBuffer(EFI_STATUS *Status, VOID **Buffer, UINTN BufferSize)
     return ret;
 }
 
-static EFI_STATUS load_file (
-    EFI_FILE_PROTOCOL *rootdir,
-    UINT8 **buffer,
-    CHAR16 *filename)
+static EFI_STATUS load_file (EFI_FILE_PROTOCOL *rootdir, UINT8 **buffer, CHAR16 *filename)
 {
     EFI_FILE_PROTOCOL *file_handle;
     check_status$(rootdir->Open(
@@ -157,9 +152,9 @@ static EFI_STATUS load_kernel(UINT8 const *buffer)
         if (phdr->p_type == PT_LOAD)
         {
             UINTN npages = EFI_SIZE_TO_PAGES(align_up$(phdr->p_memsz, EFI_PAGE_SIZE));
-            EFI_PHYSICAL_ADDRESS base = phdr->p_vaddr - MMAP_KERNEL_BASE;
-            check_status$(Bs->AllocatePages(AllocateAddress, gKernelAndModulesMemoryType, npages, &base));
+            EFI_PHYSICAL_ADDRESS base = phdr->p_vaddr;
             log$("Mapping {a} -> {a} ({})", header_addr + phdr->p_offset, phdr->p_vaddr , phdr->p_type);
+            check_status$(Bs->AllocatePages(AllocateAddress, gKernelAndModulesMemoryType, npages, &base));
 
             memcpy((VOID *) base, (VOID *)(header_addr + phdr->p_offset), phdr->p_filesz);
             memset(((VOID *) base) + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
@@ -173,8 +168,7 @@ static EFI_STATUS load_kernel(UINT8 const *buffer)
     log$("Entry poing at {a}", elf->e_entry);
     log$("Loading kernel");
 
-    // (*((int(*__attribute__((sysv_abi)))(void))(elf->e_entry - MMAP_KERNEL_BASE)))();
-
+    (*((int(*__attribute__((sysv_abi)))(void))(elf->e_entry)))();
     return EFI_SUCCESS;
 }
 
@@ -216,6 +210,5 @@ EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *SystemTable)
     check_status$(load_file(rootdir, &buffer, L"\\boot\\kernel.elf"));
     check_status$(load_kernel(buffer));
 
-    for(;;);
-    return EFI_SUCCESS;
+    for (;;);
 }

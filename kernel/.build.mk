@@ -1,5 +1,5 @@
 BINDIR_KERNEL = $(BINDIR)/kernel
-KERNEL=$(BINDIR_KERNEL)/kernel.elf
+KERNEL = $(BINDIR_KERNEL)/kernel.elf
 BINS += $(KERNEL)
 
 KERNEL_CFLAGS = \
@@ -35,8 +35,8 @@ DEPENDENCIES += $(KERNEL_OBJ:.o=.d)
 
 $(BINDIR_KERNEL)/%.c.o: %.c
 	@$(MKCWD)
-	$(CROSS_CC) -c -o $@ $< $(KERNEL_CFLAGS)
+	$(CC) -c -o $@ $< $(KERNEL_CFLAGS)
 
 $(KERNEL): $(KERNEL_OBJ)
 	@$(MKCWD)
-	$(CROSS_LD) -o $@ $^ $(KERNEL_LDFLAGS)
+	$(LD) -o $@ $^ $(KERNEL_LDFLAGS)
