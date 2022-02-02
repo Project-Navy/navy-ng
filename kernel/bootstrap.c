@@ -4,8 +4,8 @@
 #   error "Unknown architecture"
 #endif
 
-void entry_main(void)
+int _start(void)
 {
     serial_puts("Hello, World !");
-    for(;;);
+    return 666;
 }
