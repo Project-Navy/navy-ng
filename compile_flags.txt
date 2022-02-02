@@ -1,0 +1,8 @@
+-Ilib/hw
+-Ilib/
+-Wall
+-Wextra
+-Werror
+-Iloader/efi/
+-D__x86_64__
+-DKERNEL
