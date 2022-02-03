@@ -22,6 +22,14 @@ struct fmt_value fmtvals(char const *val)
     };
 }
 
+struct fmt_value fmtvalbs(Str val)
+{
+    return (struct fmt_value){
+        .type = FMT_STRING,
+        {.as_str = val.buf},
+    };
+}
+
 struct fmt_value fmtvalc(char val)
 {
     return (struct fmt_value){
