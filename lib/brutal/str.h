@@ -1,6 +1,9 @@
 #pragma once
 
+#ifndef LOADER
 #include <stddef.h>
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
