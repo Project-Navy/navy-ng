@@ -6,6 +6,7 @@
 
 typedef enum 
 {
+    LISON_LIST,
     LISON_SYMBOL,
     LISON_TRUE,
     LISON_NIL,
@@ -14,6 +15,7 @@ typedef enum
     LISON_CHAR,
     LISON_STR,
     LISON_ERROR,
+    LISON_QUOTE,
 } LisonType;
 
 typedef struct lison Lison;
@@ -39,3 +41,19 @@ struct lison
         LisonError _error;
     };
 };
+
+#define lison_nil               \
+    (Lison)                     \
+    {                           \
+        .type = LISON_NIL,      \
+    }
+
+#define lison_raise(m, r)                                                           \
+    ((Lison)                                                                        \
+    {                                                                               \
+        .type = LISON_ERROR,                                                        \
+        ._error = (LisonError) {                                                    \
+            .message = str$((m)),                                                   \
+            .line = vec_sarray_count_before((r)->buf, str$("\n"), (r)->offset) + 1  \
+        }                                                                           \
+    })

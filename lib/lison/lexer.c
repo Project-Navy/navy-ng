@@ -21,7 +21,6 @@ VecStr lison_lex_str(Str s)
 {
     char c;
     size_t i;
-    size_t lexer_line = 0;
     bool is_str = false;
 
     VecChar builder;
@@ -36,8 +35,8 @@ VecStr lison_lex_str(Str s)
         {
             case '\n':
             {
-                lexer_line++;
                 lison_smart_push(&builder, &tokens);
+                vec_push(&tokens, str$("\n"));
                 break;
             }
 
@@ -111,6 +110,11 @@ VecStr lison_lex_str(Str s)
                 while (c != '\0' && c != '\n' && c != -1)
                 {
                     continue;
+                }
+
+                if (c == '\n')
+                {
+                    vec_push(&tokens, str$("\n"));
                 }
 
                 break;

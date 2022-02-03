@@ -1,6 +1,7 @@
 #pragma once
 
 #include "object.h"
+#include "utils.h"
 #include <brutal/str.h>
 #include <navy/reader.h>
 

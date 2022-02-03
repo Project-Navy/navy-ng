@@ -1,6 +1,6 @@
 '(
-    (entries . (
-        (name . "Navy")
-        (kernel . "/boot/kernel.elf")
+    (entries (
+        (name  "Navy")
+        (kernel  "/boot/kernel.elf")
     ))
 )
