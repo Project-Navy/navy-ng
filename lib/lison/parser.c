@@ -1,15 +1,18 @@
 #include "parser.h"
+#include "brutal/str.h"
 #include "lexer.h"
 #include "object.h"
 #include "utils.h"
 #include <navy/reader.h>
 #include <navy/debug.h>
 
+static size_t line_count;
 static Lison read_form(ReaderStr *r);
 
 static Lison read_list(ReaderStr *r)
 {
     Lison tokens;
+    bool is_list = false;
     tokens.type = LISON_LIST;
     vec_init(&tokens._list);
     reader_next(r);
@@ -34,11 +37,32 @@ static Lison read_list(ReaderStr *r)
             lison_free(&tokens);
             return tmp;
         }
+        else if(tmp.type == LISON_QUOTE)
+        {
+            is_list = true;
+        }
         else
         {
             vec_push(&tokens._list, tmp);
         }
     }
+
+    if (tokens._list.length != 2 && \
+        !is_list && \
+        vec_sarray_count_before((r)->buf, str$("\n"), (r)->offset) + 1 != line_count)
+    {
+        lison_free(&tokens);
+        return lison_raise("A pair was expected", r);
+    }
+
+    /*
+    if (tokens._list.data[0].type != LISON_SYMBOL && \
+        vec_sarray_count_before((r)->buf, str$("\n"), (r)->offset) + 1 != line_count)
+    {
+        lison_free(&tokens);
+        return lison_raise("The first element of the pair has to be a symbol", r);
+    }*/
+   
 
     reader_next(r);
     return tokens;
@@ -125,6 +149,7 @@ static Lison read_form(ReaderStr *r)
 
 Lison lison_parse_str(Str s)
 {
+    line_count = str_count_chr(s, '\n') + 1;
     VecStr tokens = lison_lex_str(s);
     ReaderStr reader;
 
@@ -157,4 +182,40 @@ Lison lison_parse_str(Str s)
 Lison lison_parse_cstr(const char *s)
 {
     return lison_parse_str(str$(s));
+}
+
+Lison lison_get(Lison *self, Str key)
+{
+    if (self->type != LISON_LIST)
+    {
+        return lison_nil;
+    }
+
+    Lison obj;
+    size_t i;
+
+    vec_foreach(&self->_list, obj, i)
+    {
+        if (obj.type != LISON_LIST && obj.type != LISON_QUOTE)
+        {
+            return lison_nil;
+        }
+
+        if (obj.type == LISON_QUOTE)
+        {
+            continue;
+        }
+        
+        if (obj._list.data[0].type != LISON_SYMBOL)
+        {
+            return lison_nil;
+        }
+
+        if (str_eq(obj._list.data[0]._str, key))
+        {
+            return obj._list.data[1];
+        }
+    }
+
+    return lison_nil;
 }

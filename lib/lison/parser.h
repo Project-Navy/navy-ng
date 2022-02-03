@@ -7,3 +7,4 @@
 
 Lison lison_parse_cstr(char const *s);
 Lison lison_parse_str(Str s);
+Lison lison_get(Lison *self, Str key);

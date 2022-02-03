@@ -4,58 +4,12 @@
 #include <lison/parser.h>
 #include <navy/debug.h>
 
-
-void debug_token(Lison token)
+static void read_loader_entry(Lison entry)
 {
+    Lison name = lison_get(&entry, str$("name"));
+    Lison kernel_location = lison_get(&entry, str$("kernel"));
     
-    switch (token.type)
-    {
-        case LISON_LIST:
-        {
-
-            printf("(");
-            Lison obj;
-            size_t i;
-            vec_foreach(&token._list, obj, i)
-            {
-                debug_token(obj);
-            }
-
-            printf(")");
-            break;
-        }
-
-        case LISON_SYMBOL:
-        {
-            printf("%s ", token._str.buf);
-            break;
-        }
-
-        case LISON_STR: 
-        {
-            printf("\"%s\" ", token._str.buf);
-            break;
-        }
-
-        case LISON_TRUE:
-        {
-            printf("#t ");
-            break;
-        }
-
-        case LISON_NIL:
-        {
-            printf("nil ");
-            break;
-        }
-
-        default:
-        {
-            printf("I'm too lazy to implement that\n");
-            break;
-        }
-
-    }
+    log$("{} @ {}", name._str, kernel_location._str);
 }
 
 int main(void)
@@ -77,12 +31,15 @@ int main(void)
     {
         log$("{} at line {}", master._error.message, master._error.line);
     }
-    else  
-    {
-        debug_token(master);
-        printf("\n");
-    }
 
+    Lison entries = lison_get(&master, str$("entries"));
+    Lison entry;
+    size_t i;
+
+    vec_foreach(&entries._list, entry, i)
+    {
+        read_loader_entry(entry);
+    }
     lison_free(&master);
     free(buffer);
     return 0;
