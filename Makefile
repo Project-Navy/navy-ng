@@ -12,13 +12,13 @@ ARFLAGS := rcs
 STD_CFLAGS = \
 	-Wall \
 	-O3 \
+	-ggdb \
 	-Wextra \
 	-Werror \
 	-std=gnu2x \
 	-Wvla \
 	-MD \
 	-Ilib \
-	-Ilib/ansi \
 	-Ilib/hw \
 	-I. \
 	-D__$(CONFIG_ARCH)__
@@ -35,9 +35,9 @@ $(CACHEDIR)/OVMF.fd:
 	mv DEBUGX64_OVMF.fd $@
 
 clean:
-	rm $(BINS)
-	rm -r $(BINDIR)
-	rm -r $(CACHEDIR)
+	rm -f $(BINS)
+	rm -rf $(BINDIR)
+	rm -rf $(CACHEDIR)
 
 all: $(BINS)
 

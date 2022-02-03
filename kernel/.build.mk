@@ -18,7 +18,8 @@ KERNEL_CFLAGS = \
 	-mno-red-zone \
 	-mcmodel=kernel \
 	-DKERNEL \
-	-Ikernel/
+	-Ikernel/ \
+	-Ilib/ansi
 
 KERNEL_LDFLAGS =  \
     -nostdlib \

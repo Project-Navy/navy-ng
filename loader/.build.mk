@@ -6,6 +6,7 @@ LOADER_CFLAGS = \
 	-fshort-wchar \
 	-mno-red-zone \
 	-Iloader/efi \
+	-Ilib/ansi \
 	-DLOADER
 
 LOADER_LDFLAGS = \

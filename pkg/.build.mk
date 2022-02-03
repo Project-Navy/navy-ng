@@ -1,5 +1,6 @@
 LIBS_HOST_SRC = \
-	$(shell find ./lib/navy -name "*.c")
+	$(wildcard lib/navy/*.c) \
+	$(wildcard lib/lison/*.c)
 
 LIBS_HOST_OBJ = \
 	$(patsubst %, $(BINDIR_HOST)/%.o, $(LIBS_HOST_SRC))
@@ -35,7 +36,7 @@ $(1)_HOST_SRC = \
 
 $(1)_HOST_OBJ = $$(patsubst /%, $(BINDIR_HOST)/%.o, $$($(1)_HOST_SRC))
 $(1)_HOST_BIN = $(BINDIR_HOST)/$($(1)_NAME)
-BINS += $($(1)_NAME)
+BINS += $($(1)_HOST_BIN)
 
 $$($(1)_NAME): $$($(1)_HOST_BIN)
 	@$$($(1)_HOST_BIN)
