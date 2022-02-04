@@ -26,10 +26,6 @@
 #include <string.h>
 #include <unistd.h>
 
-#if defined(KERNEL) || defined(LOADER)
-// #include "kernel/kmalloc.h"
-#endif
-
 static unsigned int random_next = 1;
 
 int64_t pow10(int64_t power)
@@ -82,47 +78,3 @@ long random(void)
     random_next = random_next * 1103515245 + 12345;
     return (unsigned int) (random_next / 65536) % 32768;
 }
-
-void exit(int status)
-{
-#if defined(KERNEL) || defined(LOADER)
-    (void) status;
-#else
-    syscall(SYS_EXIT, status);
-#endif
-}
-
-/*
-void *malloc(size_t size)
-{
-#ifdef KERNEL 
-    return kmalloc(size);
-#else 
-    return (void *) syscall(SYS_ALLOC, size);
-#endif
-}
-
-void free(void *ptr)
-{
-#ifdef KERNEL 
-    kfree(ptr);
-#else 
-    syscall(SYS_FREE, (uintptr_t) ptr);
-#endif
-}
-
-void *realloc(void *ptr, size_t size)
-{
-#ifdef KERNEL
-    return krealloc(ptr, size);
-#else 
-    return (void *) syscall(SYS_REALLOC, (uintptr_t) ptr, size);
-#endif
-}
-
-void *calloc(size_t nmemb, size_t size)
-{
-    void *ptr = malloc(nmemb * size);
-    memset(ptr, 0, nmemb * size);
-    return ptr;
-}*/
