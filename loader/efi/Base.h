@@ -357,7 +357,10 @@ struct _LIST_ENTRY {
 ///
 /// NULL pointer (VOID *)
 ///
+
+#ifndef NULL
 #define NULL  ((VOID *) 0)
+#endif
 
 //
 // Null character

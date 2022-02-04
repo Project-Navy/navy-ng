@@ -1,6 +1,6 @@
+#include <string.h>
 #include <navy/fmt.h>
 #include <navy/elf.h>
-#include <string.h>
 #include <Uefi.h>
 #include <Protocol/LoadedImage.h>
 #include <Protocol/SimpleFileSystem.h>
