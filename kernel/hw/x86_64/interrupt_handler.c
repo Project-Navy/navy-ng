@@ -5,7 +5,6 @@
 #include <hw/x86_64/asm.h>
 
 #include <navy/fmt.h>
-
 #include <stdlib.h>
 
 [[maybe_unused]] static char *_exception_messages[32] = {
@@ -87,7 +86,7 @@ void exception_handler(Regs *regs)
     print_format(serial_puts, "R12 {a} R13 {a} R14 {a} R15 {a}\n", regs->r12,
                  regs->r13, regs->r14, regs->r15);
     print_format(serial_puts, "CR2 {a} CR3 {a} RIP \033[7m{a}\033[0m\n", read_cr2(), read_cr3(), regs->rip);
-    print_format(serial_puts, "\033[33m-----------------------------------------------------------------------------------\033[31m!!\033[0m\n");
+    print_format(serial_puts, "\n\033[33m-----------------------------------------------------------------------------------\033[31m!!\033[0m\n");
 }
 
 uint64_t interrupts_handler(uint64_t rsp)
