@@ -4,6 +4,10 @@ BINDIR = bin
 BINDIR_HOST = bin/host
 CONFIG_ARCH ?= x86_64
 
+ifeq ($(CONFIG_ARCH), x86_64)
+	AS := nasm
+endif
+
 CC := clang
 LD := clang
 AR := llvm-ar

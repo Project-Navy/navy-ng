@@ -21,6 +21,9 @@ KERNEL_CFLAGS = \
 	-Ikernel/ \
 	-Ilib/ansi
 
+KERNEL_ASFLAGS = \
+	-felf64
+
 KERNEL_LDFLAGS =  \
     -nostdlib \
     -static \
@@ -30,7 +33,9 @@ KERNEL_LDFLAGS =  \
 KERNEL_SRC = \
 	$(wildcard kernel/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
+	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.s) \
 	lib/ansi/string.c \
+	lib/ansi/stdlib.c \
 	lib/navy/fmt.c \
 	lib/navy/itoa.c \
 	lib/navy/debug.c \
@@ -38,6 +43,10 @@ KERNEL_SRC = \
 
 KERNEL_OBJ = $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
 DEPENDENCIES += $(KERNEL_OBJ:.o=.d)
+
+$(BINDIR_KERNEL)/%.s.o: %.s
+	@$(MKCWD)
+	$(AS) $(KERNEL_ASFLAGS) $< -o $@ 
 
 $(BINDIR_KERNEL)/%.c.o: %.c
 	@$(MKCWD)

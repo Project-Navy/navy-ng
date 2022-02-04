@@ -17,3 +17,24 @@ static inline void asm_out8(uint16_t port, uint8_t data)
                  :
                  : "a"(data), "d"(port));
 }
+
+static inline uintptr_t read_cr3(void)
+{
+    uintptr_t value;
+    __asm__ volatile("mov %%cr3, %0" : "=r"(value));
+
+    return value;
+}
+
+static inline uintptr_t read_cr2(void)
+{
+    uintptr_t value;
+    __asm__ volatile("mov %%cr2, %0" : "=r"(value));
+
+    return value;
+}
+
+static inline void load_cr3(uintptr_t val)
+{
+    asm volatile("mov %0, %%cr3" ::"a"(val));
+}
