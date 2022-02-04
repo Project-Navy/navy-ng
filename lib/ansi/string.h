@@ -19,9 +19,7 @@
 
 #pragma once
 
-#ifndef LOADER
 #include <stddef.h>
-#endif
 
 size_t strlen(const char *s);
 char *strrchr(const char *s, int c);
