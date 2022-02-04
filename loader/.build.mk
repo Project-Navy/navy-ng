@@ -19,6 +19,8 @@ LOADER_LDFLAGS = \
 BINDIR_LOADER=$(BINDIR)/loader
 LOADER_SRC = \
 	loader/main.c \
+	loader/memory.c \
+	loader/utils.c \
 	lib/navy/fmt.c \
 	lib/navy/itoa.c \
 	lib/ansi/string.c \

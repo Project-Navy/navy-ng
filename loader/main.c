@@ -6,101 +6,8 @@
 #include <Protocol/SimpleFileSystem.h>
 #include <Guid/FileInfo.h>
 
-#ifdef __x86_64
-#   define MMAP_KERNEL_BASE ((EFI_PHYSICAL_ADDRESS) 0xffffffff80000000)
-#else
-#   error "Unknown architecture"
-#endif
-
-#define align_up$(__addr, __align) (((__addr) + (__align)-1) & ~((__align)-1))
-#define log$(FORMAT, ...) \
-	log_impl(__LINE__, FORMAT, PRINT_ARGS(__VA_ARGS__));
-
-#define check_status$(status)                           \
-    if (status != EFI_SUCCESS)                          \
-    {                                                   \
-        log$("Unsucessful EFI status: {x}", status);    \
-        return status;                                  \
-    }                                                   \
-
-static EFI_SIMPLE_TEXT_OUTPUT_PROTOCOL *ConOut;
-static EFI_BOOT_SERVICES *Bs;
-static EFI_MEMORY_TYPE gKernelAndModulesMemoryType = 0x80000000;
-
-static VOID cstr_stdout(char const *s)
-{
-    while (*s)
-    {
-        UINT16 out[2] = {0};
-        out[0] = (UINT16) *s++;
-        ConOut->OutputString(ConOut, out);
-    }
-}
-
-static VOID log_impl(size_t line_nbr, char const *format, struct fmt_args args)
-{
-    print_format(cstr_stdout, "Navy Loader: {} ", line_nbr);
-    PRINT_FORMAT(cstr_stdout, format, args);
-    cstr_stdout("\r\n");
-}
-
-static VOID *alloc(UINTN size)
-{
-    VOID *ret;
-
-    if (EFI_ERROR(Bs->AllocatePool(EfiBootServicesData, size, &ret)))
-    {
-        log$("Out of pool");
-        return NULL;
-    }
-
-    return ret;
-}
-
-static VOID free(VOID *ptr)
-{
-    if (EFI_ERROR(Bs->FreePool(ptr)))
-    {
-        log$("Couldn't free pool");
-        for(;;);
-    }
-}
-
-static BOOLEAN GrowBuffer(EFI_STATUS *Status, VOID **Buffer, UINTN BufferSize)
-{
-    BOOLEAN ret = FALSE;
-    if (!*Buffer && BufferSize)
-    {
-        *Status = EFI_BUFFER_TOO_SMALL;
-    }
-
-    if (*Status == EFI_BUFFER_TOO_SMALL)
-    {
-        if (*Buffer)
-        {
-            free(*Buffer);
-        }
-
-        *Buffer = alloc(BufferSize);
-
-        if (*Buffer)
-        {
-            ret = TRUE;
-        }
-        else  
-        {
-            *Status = EFI_OUT_OF_RESOURCES;
-        }
-    }
-
-    if (!ret && EFI_ERROR(*Status) && *Buffer)
-    {
-        free(*Buffer);
-        *Buffer = NULL;
-    }
-
-    return ret;
-}
+#include "utils.h"
+#include "memory.h"
 
 static EFI_STATUS load_file (EFI_FILE_PROTOCOL *rootdir, UINT8 **buffer, CHAR16 *filename)
 {
@@ -152,7 +59,7 @@ static EFI_STATUS load_kernel(UINT8 const *buffer)
             UINTN npages = EFI_SIZE_TO_PAGES(align_up$(phdr->p_memsz, EFI_PAGE_SIZE));
             EFI_PHYSICAL_ADDRESS base = phdr->p_vaddr;
             log$("Mapping {a} -> {a} ({})", header_addr + phdr->p_offset, phdr->p_vaddr , phdr->p_type);
-            check_status$(Bs->AllocatePages(AllocateAddress, gKernelAndModulesMemoryType, npages, &base));
+            check_status$(Bs()->AllocatePages(AllocateAddress, gKernelAndModulesMemoryType, npages, &base));
 
             memcpy((VOID *) base, (VOID *)(header_addr + phdr->p_offset), phdr->p_filesz);
             memset(((VOID *) base) + phdr->p_filesz, 0, phdr->p_memsz - phdr->p_filesz);
@@ -171,12 +78,12 @@ static EFI_STATUS load_kernel(UINT8 const *buffer)
 }
 
 EFI_STATUS efi_main(EFI_HANDLE handle, EFI_SYSTEM_TABLE *SystemTable)
-{
-    ConOut = SystemTable->ConOut;
-    Bs = SystemTable->BootServices;
+{ 
+    register_bs(SystemTable->BootServices);
+    register_conout(SystemTable->ConOut);
 
-    ConOut->ClearScreen(ConOut);
-    check_status$(Bs->SetWatchdogTimer(0, 0, 0, NULL));
+    ConOut()->ClearScreen(ConOut());
+    check_status$(Bs()->SetWatchdogTimer(0, 0, 0, NULL));
 
     EFI_LOADED_IMAGE *image_loader;
     EFI_GUID img_guid = EFI_LOADED_IMAGE_PROTOCOL_GUID;
