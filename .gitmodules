@@ -1,6 +1,3 @@
 [submodule "loader/limine/limine"]
 	path = loader/limine/limine
 	url = https://github.com/limine-bootloader/limine
-[submodule "lib/stivale"]
-	path = lib/stivale
-	url = https://github.com/stivale/stivale

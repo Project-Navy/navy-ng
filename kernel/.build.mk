@@ -36,6 +36,7 @@ KERNEL_SRC := \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.s) \
 	lib/ansi/string.c \
+	lib/ansi/assert.c \
 	lib/ansi/stdlib.c \
 	lib/navy/fmt.c \
 	lib/navy/itoa.c \

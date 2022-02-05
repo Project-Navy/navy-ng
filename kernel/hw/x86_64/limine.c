@@ -1,5 +1,9 @@
+#include <assert.h>
 #include <stdint.h>
 #include <stivale/stivale2.h>
+#include <navy/handover.h>
+#include <navy/debug.h>
+#include <navy/range.h>
 
 #include "arch.h"
 
@@ -14,8 +18,95 @@ extern void _start(void);
     .tags = 0,
 };
 
-void stivale2_entry([[maybe_unused]] struct stivale2_struct *stivale2)
+static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_memmap *memmap)
+{
+    struct stivale2_mmap_entry mmap_entry;
+    assert(memmap->entries <= LIMIT_MEMORY_MAP_SIZE);
+    Memmap *m;
+
+    log$("Memory map:")
+    for (size_t i = 0; i < memmap->entries ; i++)
+    {
+        m = &handover->memmaps[i];
+        mmap_entry = memmap->memmap[i];
+        log$("    0x{a}-0x{a} {}", mmap_entry.base, mmap_entry.base+mmap_entry.length, stivale2_memmap_str[mmap_entry.type]);
+
+        switch(mmap_entry.type)
+        {
+            case STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE: 
+            {
+                m->type = BOOTLOADER_RECLAIMABLE;
+                break;
+            }
+
+            case STIVALE2_MMAP_KERNEL_AND_MODULES:
+            {
+                m->type = KERNEL_AND_MODULES;
+                break;
+            }
+
+            case STIVALE2_MMAP_FRAMEBUFFER:
+            {
+                m->type = FRAMEBUFFER;
+                break;
+            }
+
+            default:
+            {
+                m->type = mmap_entry.type;
+            }
+        }
+
+        m->range = (Range) {mmap_entry.base, mmap_entry.length, mmap_entry.base + mmap_entry.length};
+    }
+}
+
+static void stivale2_parse_module(Handover *handover, struct stivale2_struct_tag_modules *modules)
+{
+    assert(modules->module_count <= LIMIT_MODULE_SIZE);
+    Module *m;
+
+    for (size_t i = 0; i < modules->module_count; i++)
+    {
+        m = &handover->modules[i];
+        struct stivale2_module module = modules->modules[i];
+
+        log$("Found module named {}", m->name);
+        m->addr = (Range) {module.begin, module.end - module.begin, module.end};
+        m->name = str$(module.string);
+    }
+}
+
+static void stivale2_parse_header(struct stivale2_struct *stivale2)
+{
+    struct stivale2_tag *tag = (struct stivale2_tag *) ((uintptr_t) stivale2->tags);
+    Handover handover;
+
+    while (tag != NULL)
+    {
+        switch (tag->identifier)
+        {
+            case STIVALE2_STRUCT_TAG_MEMMAP_ID:
+            {
+                stivale2_parse_mmap(&handover, (struct stivale2_struct_tag_memmap *) tag);
+                break;
+            }
+
+            case STIVALE2_STRUCT_TAG_MODULES_ID:
+            {
+                stivale2_parse_module(&handover, (struct stivale2_struct_tag_modules *) tag);
+                break;
+            }
+        }
+
+        tag = (struct stivale2_tag *) ((uintptr_t) tag->next);
+    }
+
+}
+
+void stivale2_entry(struct stivale2_struct *stivale2)
 {
     serial_puts("\033[2J\033[H");
+    stivale2_parse_header(stivale2);
     _start();
 }

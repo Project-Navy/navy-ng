@@ -20,7 +20,7 @@
 #include "assert.h"
 #include <navy/fmt.h>
 #ifdef KERNEL
-#   include "arch/arch.h"
+#   include "arch.h"
 #else
 #   include <unistd.h>
 #   include <stdlib.h>
@@ -29,7 +29,7 @@
 void ASSERT(char const *expr, char const *filename, size_t line)
 {
     #ifdef KERNEL
-        print_format(arch_serial_puts, "\033[31m{}:{}\033[0m assertion failed ({})\n", filename, line,
+        print_format(serial_puts, "\033[31m{}:{}\033[0m assertion failed ({})\n", filename, line,
                      expr);
         raise_debug();
     #else 

@@ -22,6 +22,7 @@
     char*: fmtvals, \
     char const*: fmtvals, \
     Str: fmtvalbs, \
+    StrFix128: fmtvalbs128, \
     char: fmtvalc)(VALUE),
 
 #define PRINT_ARGS_(...)                                                                           \
@@ -74,6 +75,7 @@ struct fmt_args
 struct fmt_value fmtvald(int64_t val);
 struct fmt_value fmtvals(char const *val);
 struct fmt_value fmtvalbs(Str val);
+struct fmt_value fmtvalbs128(StrFix128 val);
 struct fmt_value fmtvalc(char val);
 void PRINT_FORMAT(void (*callback)(char const *s), char const *format, struct fmt_args args);
 
