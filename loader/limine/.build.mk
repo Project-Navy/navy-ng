@@ -1,7 +1,7 @@
 ISO = $(BINDIR)/navy.iso
 
 check_submodule:
-	@echo OK
+	git submodule update --init
 
 KERNEL_SRC += kernel/hw/x86_64/limine.c 
 KERNEL_OBJ += $(BINDIR_KERNEL)/kernel/limine.c.o
@@ -11,7 +11,7 @@ ifneq ($(CONFIG_ARCH), x86_64)
 	$(error Bad architecture)
 endif
 
-$(ISO): $(KERNEL) check_submodule 
+$(ISO): check_submodule $(KERNEL)
 	mkdir -p $(CACHEDIR)/tmp/boot
 	cp -r $(SYSROOT)/* $(CACHEDIR)/tmp/
 	cp $(KERNEL) $(CACHEDIR)/tmp/boot/kernel.elf
