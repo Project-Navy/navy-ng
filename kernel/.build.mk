@@ -24,13 +24,14 @@ KERNEL_CFLAGS = \
 KERNEL_ASFLAGS = \
 	-felf64
 
+KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link.ld
 KERNEL_LDFLAGS =  \
     -nostdlib \
     -static \
-    -Tkernel/hw/$(CONFIG_ARCH)/link.ld \
+    -T$(KERNEL_LDSCRIPT) \
     -z max-page-size=0x1000 \
 
-KERNEL_SRC = \
+KERNEL_SRC := \
 	$(wildcard kernel/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.s) \
@@ -41,7 +42,7 @@ KERNEL_SRC = \
 	lib/navy/debug.c \
 
 
-KERNEL_OBJ = $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
+KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
 DEPENDENCIES += $(KERNEL_OBJ:.o=.d)
 
 $(BINDIR_KERNEL)/%.s.o: %.s
