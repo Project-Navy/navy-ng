@@ -11,4 +11,8 @@
 #define log$(FORMAT, ...) \
 	log_impl(__FILENAME__, __LINE__, FORMAT, PRINT_ARGS(__VA_ARGS__));
 
+#define panic$(FORMAT, ...) \
+	panic_impl(__FILENAME__, __LINE__, FORMAT, PRINT_ARGS(__VA_ARGS__));
+
 void log_impl(char const *filename, size_t line_nbr, char const *format, struct fmt_args args);
+void panic_impl(char const *filename, size_t line_nbr, char const *format, struct fmt_args args);
