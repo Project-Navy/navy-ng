@@ -41,6 +41,7 @@ KERNEL_SRC := \
 	lib/navy/fmt.c \
 	lib/navy/itoa.c \
 	lib/navy/debug.c \
+	lib/navy/bitmap.c
 
 
 KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))

@@ -3,12 +3,14 @@
 #include "gdt.h"
 #include "idt.h"
 #include "simd.h"
+#include "pmm.h"
 
-void hardware_init([[maybe_unused]] Handover *handover)
+void hardware_init(Handover *handover)
 {
     gdt_init();
     idt_init();
     simd_init();
+    pmm_init(handover);
 }
 
 void raise_debug(void)
