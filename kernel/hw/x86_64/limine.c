@@ -9,7 +9,7 @@
 
 static uint8_t stack[STACK_SIZE];
 void stivale2_entry(struct stivale2_struct *stivale2);
-extern void _start(void);
+extern void _start(Handover *handover);
 
 [[gnu::section(".stivale2hdr"), gnu::used]] static struct stivale2_header stivale_hdr = {
     .entry_point = (uintptr_t) stivale2_entry,
@@ -22,6 +22,7 @@ static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_m
 {
     struct stivale2_mmap_entry mmap_entry;
     assert(memmap->entries <= LIMIT_MEMORY_MAP_SIZE);
+    handover->memmap_count = memmap->entries;
     Memmap *m;
 
     log$("Memory map:")
@@ -77,7 +78,7 @@ static void stivale2_parse_module(Handover *handover, struct stivale2_struct_tag
     }
 }
 
-static void stivale2_parse_header(struct stivale2_struct *stivale2)
+static Handover stivale2_parse_header(struct stivale2_struct *stivale2)
 {
     struct stivale2_tag *tag = (struct stivale2_tag *) ((uintptr_t) stivale2->tags);
     Handover handover;
@@ -102,11 +103,13 @@ static void stivale2_parse_header(struct stivale2_struct *stivale2)
         tag = (struct stivale2_tag *) ((uintptr_t) tag->next);
     }
 
+    return handover;
 }
 
 void stivale2_entry(struct stivale2_struct *stivale2)
 {
     serial_puts("\033[2J\033[H");
-    stivale2_parse_header(stivale2);
-    _start();
+
+    Handover handover = stivale2_parse_header(stivale2);
+    _start(&handover);
 }

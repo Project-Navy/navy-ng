@@ -7,7 +7,9 @@
 #   error "Unknown architecture"
 #endif
 
-void hardware_init(void);
+#include <navy/handover.h>
+
+void hardware_init(Handover *handover);
 void raise_debug(void);
 void hlt(void);
 void cli(void);

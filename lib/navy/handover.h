@@ -32,6 +32,8 @@ typedef struct
 
 typedef struct 
 {
+    size_t memmap_count;
+
     Module modules[LIMIT_MODULE_SIZE];
     Memmap memmaps[LIMIT_MEMORY_MAP_SIZE];
 } Handover;

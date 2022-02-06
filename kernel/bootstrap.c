@@ -1,9 +1,11 @@
 #include "arch.h"
-#include <navy/debug.h>
 
-int _start(void)
+#include <navy/debug.h>
+#include <navy/handover.h>
+
+int _start(Handover *handover)
 {
-    hardware_init();
+    hardware_init(handover);
     raise_debug();
     return 0;
 }

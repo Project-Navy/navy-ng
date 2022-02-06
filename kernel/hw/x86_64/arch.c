@@ -4,7 +4,7 @@
 #include "idt.h"
 #include "simd.h"
 
-void hardware_init(void)
+void hardware_init([[maybe_unused]] Handover *handover)
 {
     gdt_init();
     idt_init();
