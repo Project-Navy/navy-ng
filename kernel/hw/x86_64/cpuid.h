@@ -4,8 +4,6 @@
 #include <navy/result.h>
 
 // TODO
-// SSE
-// SSE2
 // AVX
 // FPU
 // XSAVE

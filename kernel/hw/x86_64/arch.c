@@ -2,11 +2,13 @@
 
 #include "gdt.h"
 #include "idt.h"
+#include "simd.h"
 
 void hardware_init(void)
 {
     gdt_init();
     idt_init();
+    simd_init();
 }
 
 void raise_debug(void)

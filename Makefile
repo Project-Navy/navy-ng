@@ -24,6 +24,8 @@ QEMUFLAGS := \
 	-enable-kvm \
 	-no-reboot \
 	-no-shutdown \
+	-M q35 \
+	-cpu host
 
 STD_CFLAGS = \
 	-Wall \

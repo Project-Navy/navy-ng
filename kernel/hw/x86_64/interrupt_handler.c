@@ -85,7 +85,8 @@ void exception_handler(Regs *regs)
                  regs->r9, regs->r10, regs->r11);
     print_format(serial_puts, "R12 {a} R13 {a} R14 {a} R15 {a}\n", regs->r12,
                  regs->r13, regs->r14, regs->r15);
-    print_format(serial_puts, "CR2 {a} CR3 {a} RIP \033[7m{a}\033[0m\n", read_cr2(), read_cr3(), regs->rip);
+    print_format(serial_puts, "CR0 {a} CR2 {a} CR3 {a} CR4 {a}\n", read_cr0(), read_cr2(), read_cr3(), read_cr4());
+    print_format(serial_puts, "RIP \033[7m{a}\033[0m\n", regs->rip);
     print_format(serial_puts, "\n\033[33m-----------------------------------------------------------------------------------\033[31m!!\033[0m\n");
 }
 
