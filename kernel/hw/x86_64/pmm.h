@@ -13,6 +13,8 @@ typedef struct
     Bitmap bitmap;
 } PmmAlloc;
 
+typedef uintptr_t PhysicalAddress;
+
 PmmResult pmm_alloc(size_t count);
 void pmm_free(Range page);
 void pmm_set_used(Range page);

@@ -15,3 +15,5 @@
 
 #define ALIGN_DOWN(__addr, __align) ((__addr) & ~((__align)-1))
 #define ALIGN_UP(__addr, __align) (((__addr) + (__align)-1) & ~((__align)-1))
+
+#define PACKED __attribute__((packed))

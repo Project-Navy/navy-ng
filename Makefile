@@ -22,10 +22,7 @@ QEMUFLAGS := \
 	-serial mon:stdio \
 	-m 4G \
 	-enable-kvm \
-	-no-reboot \
-	-no-shutdown \
-	-M q35 \
-	-cpu host
+	-no-shutdown
 
 STD_CFLAGS = \
 	-Wall \

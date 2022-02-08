@@ -8,14 +8,14 @@
 
 enum mmap_type 
 {
-    USABLE,                 
-    RESERVED,               
-    ACPI_RECLAIMABLE,       
-    ACPI_NVS,               
-    BAD_MEMORY,             
-    BOOTLOADER_RECLAIMABLE, 
-    KERNEL_AND_MODULES,     
-    FRAMEBUFFER,            
+    MEMMAP_USABLE,                 
+    MEMMAP_RESERVED,               
+    MEMMAP_ACPI_RECLAIMABLE,       
+    MEMMAP_ACPI_NVS,               
+    MEMMAP_BAD_MEMORY,             
+    MEMMAP_BOOTLOADER_RECLAIMABLE, 
+    MEMMAP_KERNEL_AND_MODULES,     
+    MEMMAP_FRAMEBUFFER,            
 };
 
 typedef struct 

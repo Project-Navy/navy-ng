@@ -31,7 +31,7 @@
     {                                                                            \
         if (!(r).success)                                                        \
         {                                                                        \
-            panic$("Can't unwrap at {}", __LINE__);                              \
+            panic$("Can't unwrap important value at {}", __LINE__);                              \
         }                                                                        \
         unwrap(r);                                                               \
     })                                                      

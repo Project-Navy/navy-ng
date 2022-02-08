@@ -30,25 +30,25 @@ static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_m
     {
         m = &handover->memmaps[i];
         mmap_entry = memmap->memmap[i];
-        log$("    0x{a}-0x{a} {}", mmap_entry.base, mmap_entry.base+mmap_entry.length, stivale2_memmap_str[mmap_entry.type]);
+        log$("{a}-{a} {}", mmap_entry.base, mmap_entry.base+mmap_entry.length, stivale2_memmap_str[mmap_entry.type]);
 
         switch(mmap_entry.type)
         {
             case STIVALE2_MMAP_BOOTLOADER_RECLAIMABLE: 
             {
-                m->type = BOOTLOADER_RECLAIMABLE;
+                m->type = MEMMAP_BOOTLOADER_RECLAIMABLE;
                 break;
             }
 
             case STIVALE2_MMAP_KERNEL_AND_MODULES:
             {
-                m->type = KERNEL_AND_MODULES;
+                m->type = MEMMAP_KERNEL_AND_MODULES;
                 break;
             }
 
             case STIVALE2_MMAP_FRAMEBUFFER:
             {
-                m->type = FRAMEBUFFER;
+                m->type = MEMMAP_FRAMEBUFFER;
                 break;
             }
 
@@ -58,7 +58,7 @@ static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_m
             }
         }
 
-        m->range = (Range) {mmap_entry.base, mmap_entry.length, mmap_entry.base + mmap_entry.length};
+        m->range = (Range) {mmap_entry.base, mmap_entry.length};
     }
 }
 
@@ -73,7 +73,7 @@ static void stivale2_parse_module(Handover *handover, struct stivale2_struct_tag
         struct stivale2_module module = modules->modules[i];
 
         log$("Found module named {}", m->name);
-        m->addr = (Range) {module.begin, module.end - module.begin, module.end};
+        m->addr = (Range) {module.begin, module.end - module.begin};
         m->name = str$(module.string);
     }
 }
@@ -108,7 +108,7 @@ static Handover stivale2_parse_header(struct stivale2_struct *stivale2)
 
 void stivale2_entry(struct stivale2_struct *stivale2)
 {
-    serial_puts("\033[2J\033[H");
+    // serial_puts("\033[2J\033[H");
 
     Handover handover = stivale2_parse_header(stivale2);
     _start(&handover);

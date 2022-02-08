@@ -3,11 +3,6 @@
 #include <stdint.h>
 #include <navy/result.h>
 
-// TODO
-// AVX
-// FPU
-// XSAVE
-
 #define FEATURE_IDENTIFIERS_CPUID (1)
 
 typedef struct 

@@ -12,14 +12,15 @@ void pmm_init(Handover *handover)
 {
     Range last_memmap_range = handover->memmaps[handover->memmap_count - 1].range;
 
-    alloc.bitmap.length = last_memmap_range.end / (PAGE_SIZE * 8);
+    alloc.bitmap.length = (last_memmap_range.base + last_memmap_range.length) / (PAGE_SIZE * 8);
 
     log$("PMM Bitmap requires {} bytes", alloc.bitmap.length);
     for (size_t i = 0; i < handover->memmap_count && alloc.bitmap.buffer == NULL; i++)
     {
         Memmap *entry = &handover->memmaps[i];
 
-        if ((entry->type == USABLE || entry->type == BOOTLOADER_RECLAIMABLE) && entry->range.length > 0)
+        if ((entry->type == MEMMAP_USABLE || entry->type == MEMMAP_BOOTLOADER_RECLAIMABLE) \
+                && entry->range.length > 0)
         {
             log$("PMM Bitmap will use memmap at 0x{a}", entry->range.base);
             alloc.bitmap.buffer = (uint8_t *) entry->range.base;
@@ -40,17 +41,17 @@ void pmm_init(Handover *handover)
     {
         Memmap entry = handover->memmaps[i];
 
-        if (entry.type == USABLE || entry.type == BOOTLOADER_RECLAIMABLE)
+        if (entry.type == MEMMAP_USABLE || entry.type == MEMMAP_BOOTLOADER_RECLAIMABLE)
         {
             pmm_free((Range) {
                 .base = ALIGN_DOWN(entry.range.base, PAGE_SIZE),
-                .end = ALIGN_UP(entry.range.length, PAGE_SIZE)
+                .length = ALIGN_UP(entry.range.length, PAGE_SIZE)
             });
         }
     }
 
     pmm_set_used((Range) {
-        .base = mmap_phys_to_io((uintptr_t) alloc.bitmap.buffer),
+        .base = mmap_io_to_phys((PhysicalAddress) alloc.bitmap.buffer),
         .length = alloc.bitmap.length
     });
 }
@@ -99,10 +100,9 @@ PmmResult pmm_alloc(size_t count)
         }
     }
 
-    range_calculate_end(&range);
     if (range.length >= count)
     {
-        last_index = range.end / PAGE_SIZE; 
+        last_index = (range.base + range.length) / PAGE_SIZE; 
         pmm_set_used(range);
     }
     else 

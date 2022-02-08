@@ -4,6 +4,7 @@
 #include "idt.h"
 #include "simd.h"
 #include "pmm.h"
+#include "vmm.h"
 
 void hardware_init(Handover *handover)
 {
@@ -11,6 +12,7 @@ void hardware_init(Handover *handover)
     idt_init();
     simd_init();
     pmm_init(handover);
+    vmm_init(handover);
 }
 
 void raise_debug(void)

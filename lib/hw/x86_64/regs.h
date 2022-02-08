@@ -1,8 +1,9 @@
 #pragma once 
 
+#include <navy/macro.h>
 #include <stdint.h>
 
-typedef struct [[gnu::packed]]
+typedef struct PACKED
 {
     uint64_t r15;
     uint64_t r14;
@@ -20,8 +21,8 @@ typedef struct [[gnu::packed]]
     uint64_t rbx;
     uint64_t rax;
 
-    uint64_t int_no;
-    uint64_t error_code;
+    uint64_t intno;
+    uint64_t err;
 
     uint64_t rip;
     uint64_t cs;
@@ -29,3 +30,9 @@ typedef struct [[gnu::packed]]
     uint64_t rsp;
     uint64_t ss;
 } Regs;
+
+typedef struct stackframe
+{
+    struct stackframe *rbp;
+    uint64_t rip;
+} Stackframe;

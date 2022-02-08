@@ -65,11 +65,17 @@ static inline void write_cr0(uintptr_t val)
     asm volatile("mov %0, %%cr0" ::"a"(val));
 }
 
+[[maybe_unused]] static void asm_invlpg(uintptr_t addr)
+{
+    asm volatile("invlpg (%0)" ::"r"(addr): "memory");
+}
+
+
 // Lots of info here https://en.wikipedia.org/wiki/Control_register
 
 enum cr0_bits 
 {
-    CR0_PE = 1,
+    CR0_PE = (1 << 0),
     CR0_MP = (1 << 1),
     CR0_EM = (1 << 2),
     CR0_TS = (1 << 3),
@@ -84,7 +90,7 @@ enum cr0_bits
 
 enum cr4_bits 
 {
-    CR4_VME = 1,
+    CR4_VME = (1 << 0),
     CR4_PVI = (1 << 1),
     CR4_TSD = (1 << 2),
     CR4_DE = (1 << 3),
@@ -111,7 +117,7 @@ enum cr4_bits
 
 enum xcr0_bits 
 {
-    XCR0_X87 = 1,
+    XCR0_X87 = (1 << 0),
     XCR0_SSE = (1 << 1),
     XCR0_AVX = (1 << 2),
     XCR0_BNDREG = (1 << 3),
