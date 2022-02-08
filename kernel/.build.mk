@@ -43,6 +43,9 @@ KERNEL_SRC := \
 	lib/navy/debug.c \
 	lib/navy/bitmap.c
 
+ifneq ($(LOADER), navy)
+	KERNEL_SRC += loader/$(LOADER)/$(LOADER).c
+endif
 
 KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
 DEPENDENCIES += $(KERNEL_OBJ:.o=.d)

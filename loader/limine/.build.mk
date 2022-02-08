@@ -3,8 +3,6 @@ ISO = $(BINDIR)/navy.iso
 check_submodule:
 	git submodule update --init
 
-KERNEL_SRC += kernel/hw/x86_64/limine.c 
-KERNEL_OBJ += $(BINDIR_KERNEL)/kernel/limine.c.o
 KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link_stivale.ld
 
 ifneq ($(CONFIG_ARCH), x86_64)
