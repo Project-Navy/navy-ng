@@ -147,3 +147,9 @@ static inline void asm_fxsave(void *region)
 {
     asm volatile("fxsave (%0)" ::"a"(region));
 }
+
+
+static inline void io_wait(void)
+{
+    __asm__ volatile ("jmp 1f\n\t" "1:jmp 2f\n\t" "2:");
+}

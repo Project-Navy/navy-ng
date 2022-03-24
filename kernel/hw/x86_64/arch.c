@@ -5,6 +5,8 @@
 #include "simd.h"
 #include "pmm.h"
 #include "vmm.h"
+#include "pit.h"
+#include "pic.h"
 
 void hardware_init(Handover *handover)
 {
@@ -13,6 +15,8 @@ void hardware_init(Handover *handover)
     simd_init();
     pmm_init(handover);
     vmm_init(handover);
+    pit_init(1000);
+    pic_init();
 }
 
 void raise_debug(void)

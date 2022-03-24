@@ -6,6 +6,6 @@
 int _start(Handover *handover)
 {
     hardware_init(handover);
-    raise_debug();
+    for(;;);
     return 0;
 }

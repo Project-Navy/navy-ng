@@ -1,5 +1,6 @@
 #include "arch.h"
 #include "hw/x86_64/rtc.h"
+#include "hw/x86_64/pic.h"
 
 #include <hw/x86_64/regs.h>
 #include <hw/x86_64/asm.h>
@@ -104,6 +105,16 @@ uint64_t interrupts_handler(uint64_t rsp)
             hlt();
         }
     }
+    else if (regs->intno >= 32 && regs->intno < 47)
+    {
+        uint8_t irq = regs->intno - 32;
 
+        if (irq == 0)
+        {
+        }
+
+    }
+
+    pic_sendEOI(regs->intno);
     return rsp;
 }
