@@ -4,6 +4,7 @@
 
 #include <assert.h>
 #include <navy/range.h>
+#include <navy/debug.h>
 #include <hw/x86_64/asm.h>
 
 static Pml *kernel_pml;

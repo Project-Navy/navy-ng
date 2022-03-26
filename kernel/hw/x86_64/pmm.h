@@ -5,8 +5,6 @@
 #include <navy/handover.h>
 #include <navy/bitmap.h>
 
-typedef Result(Range, int) PmmResult;
-
 typedef struct 
 {
     // lock;
@@ -14,8 +12,9 @@ typedef struct
 } PmmAlloc;
 
 typedef uintptr_t PhysicalAddress;
+typedef Option(Range) PmmOption;
 
-PmmResult pmm_alloc(size_t count);
+PmmOption pmm_alloc(size_t count);
 void pmm_free(Range page);
 void pmm_set_used(Range page);
 void pmm_init(Handover *handover);

@@ -2,6 +2,7 @@
 
 #include <stdbool.h>
 #include <navy/debug.h>
+#include <brutal/str.h>
 
 #define Result(TOk, TError)                                                    \
     struct                                                                     \
@@ -14,17 +15,22 @@
         };                                                                     \
     }
 
-#define ERR(T, Err)                                                            \
+#define Err(T, Err)                                                            \
     (T)                                                                        \
     {                                                                          \
         .success = false, ._error = Err                                        \
     }
 
-#define OK(T, Res)                                                             \
+#define Ok(T, Res)                                                             \
     (T)                                                                        \
     {                                                                          \
         .success = true, ._ok = Res                                            \
     }
+
+
+#define Option(TOk) Result(TOk, int)
+#define None(T) Err(T, 1)
+#define Some(T, Res) Ok(T, Res)
 
 #define unwrap(r) (r)._ok
 #define unwrap_or_panic(r)(                                                      \

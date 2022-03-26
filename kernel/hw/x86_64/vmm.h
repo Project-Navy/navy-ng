@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <navy/macro.h>
 #include <navy/handover.h>
+#include <navy/result.h>
 
 #define PMLX_GET_INDEX(addr, level)                                                                \
     (((uint64_t) addr & ((uint64_t) 0x1ff << (12 + level * 9))) >> (12 + level * 9))
@@ -55,5 +56,8 @@ static inline PmlEntry pml_make_entry(uintptr_t physical, bool is_user)
     };
 }
 
+typedef Option(Pml) PmlOption;
+
 void vmm_init(Handover *handover);
 void vmm_switch_space(Pml *pml);
+PmlOption vmm_create_space(void);

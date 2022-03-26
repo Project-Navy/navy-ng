@@ -1,9 +1,10 @@
 #include "pmm.h"
 #include "const.h"
-#include "navy/handover.h"
-#include "navy/macro.h"
 
 #include <navy/bitmap.h>
+#include <navy/debug.h>
+#include <navy/handover.h>
+#include <navy/macro.h>
 
 static PmmAlloc alloc;
 static size_t last_index = 0;
@@ -78,7 +79,7 @@ void pmm_free(Range page)
     }
 }
 
-PmmResult pmm_alloc(size_t count)
+PmmOption pmm_alloc(size_t count)
 {
     // insert lock
     Range range = {0};
@@ -109,9 +110,9 @@ PmmResult pmm_alloc(size_t count)
     {
         if (last_index == 0)
         {
-            return ERR(PmmResult, 0);
+            return None(PmmOption);
         }
     }
 
-    return OK(PmmResult, range);
+    return Some(PmmOption, range);
 }
