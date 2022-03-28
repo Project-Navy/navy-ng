@@ -5,9 +5,11 @@
 #include <navy/debug.h>
 #include <navy/handover.h>
 #include <navy/macro.h>
+#include <navy/lock.h>
 
 static PmmAlloc alloc;
 static size_t last_index = 0;
+static DECLARE_LOCK(pmm);
 
 void pmm_init(Handover *handover)
 {
@@ -59,7 +61,6 @@ void pmm_init(Handover *handover)
 
 void pmm_set_used(Range page)
 {
-    // insert lock
     size_t target = page.base / PAGE_SIZE;
 
     for (size_t i = 0; i < page.length / PAGE_SIZE; i++)
@@ -70,18 +71,20 @@ void pmm_set_used(Range page)
 
 void pmm_free(Range page)
 {
-    // insert lock
+    LOCK(pmm);
     size_t target = page.base / PAGE_SIZE;
 
     for (size_t i = 0; i < page.length / PAGE_SIZE; i++)
     {
         bitmap_clear_bit(&alloc.bitmap, target + i);
     }
+    UNLOCK(pmm);
 }
 
 PmmOption pmm_alloc(size_t count)
 {
-    // insert lock
+    LOCK(pmm);
+
     Range range = {0};
 
     for (size_t i = last_index; i < alloc.bitmap.length && range.length < count; i++)
@@ -114,5 +117,6 @@ PmmOption pmm_alloc(size_t count)
         }
     }
 
+    UNLOCK(pmm);
     return Some(PmmOption, range);
 }

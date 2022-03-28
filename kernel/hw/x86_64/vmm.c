@@ -5,17 +5,23 @@
 #include <assert.h>
 #include <navy/range.h>
 #include <navy/debug.h>
+#include <navy/lock.h>
 #include <hw/x86_64/asm.h>
 
 static Pml *kernel_pml;
+static DECLARE_LOCK(vmm);
 static size_t limit_pml = 4; // TODO: Detect 5 level
 
 static void vmm_flush(Range virt_range)
 {
+    LOCK(vmm);
+
     for (size_t i = 0; i < (virt_range.length / PAGE_SIZE); i++)
     {
         asm_invlpg(((virt_range.base / PAGE_SIZE) + 1) * PAGE_SIZE);
     }
+
+    UNLOCK(vmm);
 }
 
 static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
@@ -39,6 +45,8 @@ static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
 
 static void vmm_map_page(Pml *pml, VirtualAddress virt, PhysicalAddress phys, bool is_user)
 {
+    LOCK(vmm);
+
     Pml *last_entry = pml;
 
     for (size_t i = limit_pml - 1; i > 0; i--)
@@ -48,11 +56,12 @@ static void vmm_map_page(Pml *pml, VirtualAddress virt, PhysicalAddress phys, bo
     }
 
     last_entry->entries[PMLX_GET_INDEX(virt, 0)] = pml_make_entry(phys, is_user);
+
+    UNLOCK(vmm);
 }
 
 void vmm_map_range(Pml *pml, Range virt, Range phys, bool is_user)
 {
-    // Infinite loop here
     assert(virt.length == phys.length);
 
     size_t physaddr;
@@ -71,7 +80,11 @@ void vmm_map_range(Pml *pml, Range virt, Range phys, bool is_user)
 
 void vmm_switch_space(Pml *pml)
 {
+    LOCK(vmm);
+
     write_cr3(mmap_io_to_phys((PhysicalAddress) pml));
+
+    UNLOCK(vmm);
 }
 
 void vmm_init(Handover *handover)

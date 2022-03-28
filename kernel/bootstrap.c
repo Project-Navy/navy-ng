@@ -6,6 +6,7 @@
 int _start(Handover *handover)
 {
     hardware_init(handover);
+    log$("Ok");
     for(;;);
     return 0;
 }
