@@ -70,7 +70,7 @@ static const char *comments[] = {
     "",
 };
 
-void exception_handler(Regs *regs)
+static void exception_handler(Regs *regs)
 {
     srandom(rtc_sec() * rtc_sec());
     int funny_id = random() % (sizeof(comments) / sizeof(comments[0]));
@@ -93,7 +93,7 @@ void exception_handler(Regs *regs)
 
 uint64_t interrupts_handler(uint64_t rsp)
 {
-    Regs *regs = (void *) rsp;
+    Regs *regs = (Regs *) rsp;
 
     if (regs->intno < 32)
     {
@@ -105,7 +105,7 @@ uint64_t interrupts_handler(uint64_t rsp)
             hlt();
         }
     }
-    else if (regs->intno >= 32 && regs->intno < 47)
+    else if (regs->intno < 48)
     {
         uint8_t irq = regs->intno - 32;
 

@@ -17,9 +17,8 @@ SYSROOT = sysroot
 
 MKCWD = @mkdir -p $(@D)
 
-QEMU := qemu-system-$(CONFIG_ARCH)
+QEMU ?= qemu-system-$(CONFIG_ARCH)
 QEMUFLAGS := \
-	-serial mon:stdio \
 	-m 4G \
 	-enable-kvm \
 	-no-shutdown

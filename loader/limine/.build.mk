@@ -38,3 +38,10 @@ run-dbg: $(ISO)
 		-cdrom $< \
 		-s -S \
 		-d int
+
+run-dbg-nogui: $(ISO)
+	$(QEMU) $(QEMUFLAGS) \
+		-cdrom $< \
+		-nographic \
+		-s -S \
+		-d int

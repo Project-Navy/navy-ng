@@ -8,6 +8,8 @@
 #include "pit.h"
 #include "pic.h"
 
+#include <hw/x86_64/asm.h>
+
 void hardware_init(Handover *handover)
 {
     gdt_init();
@@ -37,4 +39,9 @@ void cli(void)
 void sti(void)
 {
     asm volatile("sti");
+}
+
+VmmSpace get_address_space(void)
+{
+    return (VmmSpace) mmap_phys_to_io(read_cr3());
 }

@@ -35,6 +35,7 @@ KERNEL_SRC := \
 	$(wildcard kernel/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.s) \
+	$(wildcard lib/liballoc/*.c) \
 	lib/ansi/string.c \
 	lib/ansi/assert.c \
 	lib/ansi/stdlib.c \

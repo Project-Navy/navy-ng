@@ -24,6 +24,19 @@ static void vmm_flush(Range virt_range)
     UNLOCK(vmm);
 }
 
+static RangeOption vmm_get_pml(Pml *pml, size_t index)
+{
+    PmlEntry entry = pml->entries[index];
+    
+    if (entry.present)
+    {
+        Range pml_range = {mmap_phys_to_io(entry.physical << 12), PAGE_SIZE};
+        return Some(RangeOption, pml_range);
+    }
+
+    return None(RangeOption);
+}
+
 static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
 {
     PmlEntry entry = pml->entries[index];
@@ -133,4 +146,21 @@ void vmm_init(Handover *handover)
     }
 
     vmm_switch_space(kernel_pml);
+}
+
+void vmm_unmap_page(Pml *page, uintptr_t vaddr)
+{
+    LOCK(vmm);
+
+    Pml *last_entry = page;
+
+    for (size_t i = limit_pml - 1; i > 0; i--)
+    {
+        Range pml_range = unwrap_or_panic(vmm_get_pml(last_entry, PMLX_GET_INDEX(vaddr, i)));
+        last_entry = (Pml *) pml_range.base;
+    }
+
+    last_entry->entries[PMLX_GET_INDEX(vaddr, 0)] = (PmlEntry) {};
+
+    UNLOCK(vmm);
 }

@@ -7,18 +7,19 @@
 #include <navy/macro.h>
 #include <navy/lock.h>
 
-static PmmAlloc alloc;
-static size_t last_index = 0;
+
+static Bitmap bitmap;
 static DECLARE_LOCK(pmm);
+static size_t last_index = 0;
 
 void pmm_init(Handover *handover)
 {
     Range last_memmap_range = handover->memmaps[handover->memmap_count - 1].range;
 
-    alloc.bitmap.length = (last_memmap_range.base + last_memmap_range.length) / (PAGE_SIZE * 8);
+    bitmap.length = (last_memmap_range.base + last_memmap_range.length) / (PAGE_SIZE * 8);
 
-    log$("PMM Bitmap requires {} bytes", alloc.bitmap.length);
-    for (size_t i = 0; i < handover->memmap_count && alloc.bitmap.buffer == NULL; i++)
+    log$("PMM Bitmap requires {} bytes", bitmap.length);
+    for (size_t i = 0; i < handover->memmap_count && bitmap.buffer == NULL; i++)
     {
         Memmap *entry = &handover->memmaps[i];
 
@@ -26,19 +27,19 @@ void pmm_init(Handover *handover)
                 && entry->range.length > 0)
         {
             log$("PMM Bitmap will use memmap at 0x{a}", entry->range.base);
-            alloc.bitmap.buffer = (uint8_t *) entry->range.base;
+            bitmap.buffer = (uint8_t *) mmap_phys_to_io(entry->range.base);
         }
 
-        entry->range.base += ALIGN_UP(alloc.bitmap.length, PAGE_SIZE);
-        entry->range.length -= ALIGN_UP(alloc.bitmap.length, PAGE_SIZE);
+        entry->range.base += ALIGN_UP(bitmap.length, PAGE_SIZE);
+        entry->range.length -= ALIGN_UP(bitmap.length, PAGE_SIZE);
     }
 
-    if (alloc.bitmap.buffer == NULL)
+    if (bitmap.buffer == NULL)
     {
         panic$("Couldn't find a valid memory space for the PMM Bitmap");
     }
 
-    memset(alloc.bitmap.buffer, 0xff, alloc.bitmap.length);
+    memset(bitmap.buffer, 0xff, bitmap.length);
 
     for (size_t i = 0; i < handover->memmap_count; i++)
     {
@@ -54,8 +55,8 @@ void pmm_init(Handover *handover)
     }
 
     pmm_set_used((Range) {
-        .base = mmap_io_to_phys((PhysicalAddress) alloc.bitmap.buffer),
-        .length = alloc.bitmap.length
+        .base = mmap_io_to_phys((PhysicalAddress) bitmap.buffer),
+        .length = bitmap.length
     });
 }
 
@@ -65,7 +66,7 @@ void pmm_set_used(Range page)
 
     for (size_t i = 0; i < page.length / PAGE_SIZE; i++)
     {
-        bitmap_set_bit(&alloc.bitmap, target + i);
+        bitmap_set_bit(&bitmap, target + i);
     }
 }
 
@@ -76,7 +77,7 @@ void pmm_free(Range page)
 
     for (size_t i = 0; i < page.length / PAGE_SIZE; i++)
     {
-        bitmap_clear_bit(&alloc.bitmap, target + i);
+        bitmap_clear_bit(&bitmap, target + i);
     }
     UNLOCK(pmm);
 }
@@ -87,9 +88,9 @@ PmmOption pmm_alloc(size_t count)
 
     Range range = {0};
 
-    for (size_t i = last_index; i < alloc.bitmap.length && range.length < count; i++)
+    for (size_t i = last_index; i < bitmap.length && range.length < count; i++)
     {
-        if (bitmap_is_bit_set(&alloc.bitmap, i))
+        if (bitmap_is_bit_set(&bitmap, i))
         {
             if (range.length == 0)
             {
@@ -119,4 +120,12 @@ PmmOption pmm_alloc(size_t count)
 
     UNLOCK(pmm);
     return Some(PmmOption, range);
+}
+
+Range get_pmm_bitmap_range(void)
+{
+    return (Range) {
+        .base = (uintptr_t) bitmap.buffer,
+        .length = bitmap.length
+    };
 }
