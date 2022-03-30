@@ -1,4 +1,3 @@
-#include "hw/x86_64/mapping.h"
 #include "hw/x86_64/vmm.h"
 #include <navy/lock.h>
 #include <navy/result.h>

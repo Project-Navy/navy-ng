@@ -1,6 +1,5 @@
 #include "arch.h"
 
-#include "mapping.h"
 #include "gdt.h"
 #include "idt.h"
 #include "simd.h"

@@ -1,6 +1,5 @@
 #include "pmm.h"
 #include "const.h"
-#include "mapping.h"
 
 #include <navy/bitmap.h>
 #include <navy/debug.h>

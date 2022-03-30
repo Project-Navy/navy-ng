@@ -58,7 +58,6 @@ static inline void write_cr4(uintptr_t val)
 
 static inline void write_cr3(uintptr_t val)
 {
-    log$("{}", val);
     asm volatile("mov %0, %%cr3" ::"a"(val));
 }
 
