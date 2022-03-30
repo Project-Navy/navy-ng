@@ -1,6 +1,7 @@
 #pragma once 
 
 #include <stdint.h>
+#include <navy/debug.h>
 
 static inline uint8_t asm_in8(uint16_t port)
 {
@@ -57,6 +58,7 @@ static inline void write_cr4(uintptr_t val)
 
 static inline void write_cr3(uintptr_t val)
 {
+    log$("{}", val);
     asm volatile("mov %0, %%cr3" ::"a"(val));
 }
 

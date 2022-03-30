@@ -34,7 +34,7 @@ run-nogui: $(ISO)
 	$(QEMU) $(QEMUFLAGS) \
 		-cdrom $< \
 		-nographic \
-		-no-reboot
+		-no-reboot \
 
 run-dbg: $(ISO)
 	$(QEMU) $(QEMUFLAGS) \

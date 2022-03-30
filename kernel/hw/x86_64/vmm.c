@@ -1,4 +1,5 @@
 #include "vmm.h"
+#include "arch.h"
 #include "navy/handover.h"
 #include "pmm.h"
 #include "const.h"
@@ -97,8 +98,10 @@ void vmm_switch_space(Pml *pml)
 {
     LOCK(vmm);
 
-    log$("{a}", (PhysicalAddress) pml);
+    log$("{a}", (uintptr_t) pml)
+    log$("{a}", mmap_kernel_to_phys((uintptr_t) pml));
     write_cr3(mmap_kernel_to_phys((PhysicalAddress) pml));
+    log$("OK");
 
     UNLOCK(vmm);
 }

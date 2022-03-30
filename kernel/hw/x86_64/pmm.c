@@ -8,7 +8,6 @@
 #include <navy/macro.h>
 #include <navy/lock.h>
 
-
 static Bitmap bitmap;
 static DECLARE_LOCK(pmm);
 static size_t last_index = 0;
@@ -16,7 +15,6 @@ static size_t last_index = 0;
 void pmm_init(Handover *handover)
 {
     Range last_memmap_range = handover->memmaps[handover->memmap_count - 1].range;
-    
     bitmap.length = (last_memmap_range.base + last_memmap_range.length) / (PAGE_SIZE * 8);
 
     log$("PMM Bitmap requires {} bytes", bitmap.length);
@@ -31,6 +29,7 @@ void pmm_init(Handover *handover)
 
             entry->range.base += ALIGN_UP(bitmap.length, PAGE_SIZE);
             entry->range.length -= ALIGN_UP(bitmap.length, PAGE_SIZE);
+            
             break;
         }
     }
@@ -46,7 +45,7 @@ void pmm_init(Handover *handover)
     {
         Memmap entry = handover->memmaps[i];
 
-        if (entry.type == MEMMAP_USABLE || entry.type == MEMMAP_BOOTLOADER_RECLAIMABLE)
+        if (entry.type == MEMMAP_USABLE)
         {
             pmm_free((Range) {
                 .base = ALIGN_DOWN(entry.range.base, PAGE_SIZE),
@@ -91,7 +90,7 @@ PmmOption pmm_alloc(size_t count)
 
     for (size_t i = last_index; i < bitmap.length && range.length < count; i++)
     {
-        if (bitmap_is_bit_set(&bitmap, i))
+        if (!bitmap_is_bit_set(&bitmap, i))
         {
             if (range.length == 0)
             {
@@ -119,7 +118,6 @@ PmmOption pmm_alloc(size_t count)
         }
 
         last_index = 0;
-
         return pmm_alloc(count);
     }
 
