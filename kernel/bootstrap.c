@@ -4,11 +4,17 @@
 
 #include <navy/debug.h>
 #include <navy/handover.h>
+#include <limine/limine.h>
 
-int _start(Handover *handover)
+static Handover handover;
+
+int _start(void)
 {
-    hardware_init(handover);
+    serial_puts("\033[2J\033[H");
 
-    for(;;);
+    parse_mmap(&handover);
+    hardware_init(&handover);
+    raise_debug();
+
     return 0;
 }

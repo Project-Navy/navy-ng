@@ -70,6 +70,19 @@ static const char *comments[] = {
     "",
 };
 
+
+/*static void backtrace(uint64_t rsp)
+{
+    Stackframe *frame = (Stackframe *) rsp;
+
+    print_format(serial_puts, "Stackframe: \n");
+    while (frame)
+    {
+        print_format(serial_puts, "    [{a}]\n", frame->rip);
+        frame = frame->rbp;
+    }
+}*/
+
 static void exception_handler(Regs *regs)
 {
     srandom(rtc_sec() * rtc_sec());
@@ -98,6 +111,7 @@ uint64_t interrupts_handler(uint64_t rsp)
     if (regs->intno < 32)
     {
         exception_handler(regs);
+        //backtrace(regs->rbp);
 
         for(;;)
         {

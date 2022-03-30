@@ -1,5 +1,6 @@
 #include "arch.h"
 
+#include "mapping.h"
 #include "gdt.h"
 #include "idt.h"
 #include "simd.h"
@@ -43,5 +44,5 @@ void sti(void)
 
 VmmSpace get_address_space(void)
 {
-    return (VmmSpace) mmap_phys_to_io(read_cr3());
+    return (VmmSpace) mmap_phys_to_kernel(read_cr3());
 }

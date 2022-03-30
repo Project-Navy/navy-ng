@@ -10,6 +10,7 @@ ifneq ($(CONFIG_ARCH), x86_64)
 endif
 
 $(ISO): check_submodule $(KERNEL)
+	make -C ./loader/limine/limine
 	mkdir -p $(CACHEDIR)/tmp/boot
 	cp -r $(SYSROOT)/* $(CACHEDIR)/tmp/
 	cp $(KERNEL) $(CACHEDIR)/tmp/boot/kernel.elf
@@ -21,17 +22,19 @@ $(ISO): check_submodule $(KERNEL)
         -efi-boot-part --efi-boot-image --protective-msdos-label \
         $(CACHEDIR)/tmp/ -o $(ISO)
 
-	./loader/limine/limine/limine-install-linux-x86_64 $@
+	./loader/limine/limine/limine-s2deploy $@
 	rm -rf $(CACHEDIR)/tmp/
 
 run: $(ISO)
 	$(QEMU) $(QEMUFLAGS) \
-		-cdrom $<
+		-cdrom $< \
+		-no-reboot
 
 run-nogui: $(ISO)
 	$(QEMU) $(QEMUFLAGS) \
 		-cdrom $< \
 		-nographic \
+		-no-reboot
 
 run-dbg: $(ISO)
 	$(QEMU) $(QEMUFLAGS) \

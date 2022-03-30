@@ -25,7 +25,6 @@ QEMUFLAGS := \
 
 STD_CFLAGS = \
 	-Wall \
-	-O3 \
 	-ggdb \
 	-Wextra \
 	-Werror \

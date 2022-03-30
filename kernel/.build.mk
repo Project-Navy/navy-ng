@@ -9,7 +9,7 @@ KERNEL_CFLAGS = \
     -fno-pic \
     -m64 \
     -ggdb \
-    -Os \
+    -O3 \
 	-mno-80387 \
 	-mno-mmx \
 	-mno-3dnow \
@@ -42,7 +42,8 @@ KERNEL_SRC := \
 	lib/navy/fmt.c \
 	lib/navy/itoa.c \
 	lib/navy/debug.c \
-	lib/navy/bitmap.c
+	lib/navy/bitmap.c \
+	lib/navy/handover.c
 
 ifneq ($(LOADER), navy)
 	KERNEL_SRC += loader/$(LOADER)/$(LOADER).c

@@ -1,5 +1,6 @@
 #include "pmm.h"
 #include "const.h"
+#include "mapping.h"
 
 #include <navy/bitmap.h>
 #include <navy/debug.h>
@@ -15,23 +16,23 @@ static size_t last_index = 0;
 void pmm_init(Handover *handover)
 {
     Range last_memmap_range = handover->memmaps[handover->memmap_count - 1].range;
-
+    
     bitmap.length = (last_memmap_range.base + last_memmap_range.length) / (PAGE_SIZE * 8);
 
     log$("PMM Bitmap requires {} bytes", bitmap.length);
-    for (size_t i = 0; i < handover->memmap_count && bitmap.buffer == NULL; i++)
+    for (size_t i = 0; i < handover->memmap_count; i++)
     {
         Memmap *entry = &handover->memmaps[i];
 
-        if ((entry->type == MEMMAP_USABLE || entry->type == MEMMAP_BOOTLOADER_RECLAIMABLE) \
-                && entry->range.length > 0)
+        if (entry->type == MEMMAP_USABLE && entry->range.length >= bitmap.length)
         {
             log$("PMM Bitmap will use memmap at 0x{a}", entry->range.base);
-            bitmap.buffer = (uint8_t *) mmap_phys_to_io(entry->range.base);
-        }
+            bitmap.buffer = (uint8_t *) mmap_phys_to_kernel(entry->range.base);
 
-        entry->range.base += ALIGN_UP(bitmap.length, PAGE_SIZE);
-        entry->range.length -= ALIGN_UP(bitmap.length, PAGE_SIZE);
+            entry->range.base += ALIGN_UP(bitmap.length, PAGE_SIZE);
+            entry->range.length -= ALIGN_UP(bitmap.length, PAGE_SIZE);
+            break;
+        }
     }
 
     if (bitmap.buffer == NULL)
@@ -55,19 +56,21 @@ void pmm_init(Handover *handover)
     }
 
     pmm_set_used((Range) {
-        .base = mmap_io_to_phys((PhysicalAddress) bitmap.buffer),
+        .base = mmap_kernel_to_phys((PhysicalAddress) bitmap.buffer),
         .length = bitmap.length
     });
 }
 
 void pmm_set_used(Range page)
 {
+    LOCK(pmm);
     size_t target = page.base / PAGE_SIZE;
 
     for (size_t i = 0; i < page.length / PAGE_SIZE; i++)
     {
         bitmap_set_bit(&bitmap, target + i);
     }
+    UNLOCK(pmm);
 }
 
 void pmm_free(Range page)
@@ -84,8 +87,6 @@ void pmm_free(Range page)
 
 PmmOption pmm_alloc(size_t count)
 {
-    LOCK(pmm);
-
     Range range = {0};
 
     for (size_t i = last_index; i < bitmap.length && range.length < count; i++)
@@ -116,9 +117,12 @@ PmmOption pmm_alloc(size_t count)
         {
             return None(PmmOption);
         }
+
+        last_index = 0;
+
+        return pmm_alloc(count);
     }
 
-    UNLOCK(pmm);
     return Some(PmmOption, range);
 }
 

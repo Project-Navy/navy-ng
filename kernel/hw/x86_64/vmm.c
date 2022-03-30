@@ -1,6 +1,8 @@
 #include "vmm.h"
+#include "navy/handover.h"
 #include "pmm.h"
 #include "const.h"
+#include "mapping.h"
 
 #include <assert.h>
 #include <navy/range.h>
@@ -30,7 +32,7 @@ static RangeOption vmm_get_pml(Pml *pml, size_t index)
     
     if (entry.present)
     {
-        Range pml_range = {mmap_phys_to_io(entry.physical << 12), PAGE_SIZE};
+        Range pml_range = {mmap_phys_to_kernel(entry.physical << 12), PAGE_SIZE};
         return Some(RangeOption, pml_range);
     }
 
@@ -43,16 +45,16 @@ static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
 
     if (entry.present)
     {
-        Range pml_range = {mmap_phys_to_io(entry.physical << 12), PAGE_SIZE};
+        Range pml_range = {mmap_phys_to_kernel(entry.physical << 12), PAGE_SIZE};
         return pml_range;
     }
     else  
     {
         Range target_range = unwrap_or_panic(pmm_alloc(PAGE_SIZE));
-        memset((void *) mmap_phys_to_io(target_range.base), 0, PAGE_SIZE);
+        memset((void *) mmap_phys_to_kernel(target_range.base), 0, PAGE_SIZE);
         pml->entries[index] = pml_make_entry(target_range.base, is_user);
 
-        return (Range) {mmap_phys_to_io(target_range.base), PAGE_SIZE};
+        return (Range) {mmap_phys_to_kernel(target_range.base), PAGE_SIZE};
     }
 }
 
@@ -95,7 +97,8 @@ void vmm_switch_space(Pml *pml)
 {
     LOCK(vmm);
 
-    write_cr3(mmap_io_to_phys((PhysicalAddress) pml));
+    log$("{a}", (PhysicalAddress) pml);
+    write_cr3(mmap_kernel_to_phys((PhysicalAddress) pml));
 
     UNLOCK(vmm);
 }
@@ -103,12 +106,12 @@ void vmm_switch_space(Pml *pml)
 void vmm_init(Handover *handover)
 {
     Range kernel_range = unwrap_or_panic(pmm_alloc(PAGE_SIZE));
-    kernel_pml = (Pml *) mmap_phys_to_io(kernel_range.base);
+    kernel_pml = (Pml *) mmap_phys_to_kernel(kernel_range.base);
     memset(kernel_pml, 0, kernel_range.length);
 
     vmm_map_range(kernel_pml, 
         (Range) {
-            .base = mmap_phys_to_io(0),
+            .base = mmap_phys_to_kernel(0),
             .length = 0xffffffff,
         },
         (Range) {
@@ -119,6 +122,7 @@ void vmm_init(Handover *handover)
     for (size_t i = 0; i < handover->memmap_count; i++)
     {
         Memmap memmap = handover->memmaps[i];
+
 
         if (memmap.type == MEMMAP_KERNEL_AND_MODULES)
         {
@@ -135,7 +139,7 @@ void vmm_init(Handover *handover)
 
         vmm_map_range(kernel_pml, 
         (Range){
-            .base = mmap_phys_to_io(ALIGN_DOWN(memmap.range.base, PAGE_SIZE)),
+            .base = mmap_phys_to_kernel(ALIGN_DOWN(memmap.range.base, PAGE_SIZE)),
             .length = ALIGN_UP(memmap.range.length, PAGE_SIZE) + PAGE_SIZE,
         },
                             

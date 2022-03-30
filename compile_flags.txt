@@ -9,3 +9,4 @@
 -I.
 -D__x86_64__
 -DKERNEL
+-std=gnu2x
