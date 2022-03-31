@@ -41,3 +41,19 @@
         }                                                                        \
         unwrap(r);                                                               \
     })                                                      
+
+#define unwrap_or(r, c)(                                                         \
+    {                                                                            \
+        typeof(r._ok) __result;                                                  \
+        if (!(r).success)                                                        \
+        {                                                                        \
+            __result = (c);                                                      \
+        }                                                                        \
+        else                                                                     \
+        {                                                                        \
+            __result = unwrap(r);                                                \
+        }                                                                        \
+                                                                                 \
+        __result;                                                                \
+    }                                                                            \
+)

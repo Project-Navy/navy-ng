@@ -1,6 +1,6 @@
 #include "vmm.h"
 #include "arch.h"
-#include "navy/handover.h"
+#include "hw/x86_64/asm.h"
 #include "pmm.h"
 #include "const.h"
 
@@ -8,7 +8,7 @@
 #include <navy/range.h>
 #include <navy/debug.h>
 #include <navy/lock.h>
-#include <hw/x86_64/asm.h>
+#include <navy/handover.h>
 
 static Pml *kernel_pml;
 static DECLARE_LOCK(vmm);
@@ -127,7 +127,7 @@ void vmm_init(Handover *handover)
         {
             vmm_map_range(kernel_pml,
                 (Range){
-                    .base = mmap_phys_to_kernel(ALIGN_DOWN(memmap.range.base, PAGE_SIZE)),
+                    .base = mmap_phys_to_io(ALIGN_DOWN(memmap.range.base, PAGE_SIZE)),
                     .length = ALIGN_UP(memmap.range.length, PAGE_SIZE) + PAGE_SIZE,
                 },
                 (Range) {
@@ -166,4 +166,33 @@ void vmm_unmap_page(Pml *page, uintptr_t vaddr)
     last_entry->entries[PMLX_GET_INDEX(vaddr, 0)] = (PmlEntry) {};
 
     UNLOCK(vmm);
+}
+
+PmlOption vmm_create_space(void)
+{
+    LOCK(vmm);
+
+    PmmOption phys_option = pmm_alloc(PAGE_SIZE);
+    Range phys_range;
+
+    if (phys_option.success == false)
+    {
+        return None(PmlOption);
+    }
+    else  
+    {
+        phys_range = unwrap(phys_option);
+    }
+
+    Pml *space = (Pml *) mmap_phys_to_kernel(phys_range.base);
+    memset(space, 0, PAGE_SIZE);
+
+    for (size_t i = 255; i < 512; i++)
+    {
+        space->entries[i] = kernel_pml->entries[i];
+    }
+
+    UNLOCK(vmm);
+
+    return Some(PmlOption, space);
 }

@@ -4,6 +4,7 @@ BINS += $(KERNEL)
 
 KERNEL_CFLAGS = \
 	$(STD_CFLAGS) \
+	--target=x86_64-none-elf \
 	-ffreestanding \
 	-fno-stack-protector \
     -fno-pic \
@@ -19,6 +20,7 @@ KERNEL_CFLAGS = \
 	-mcmodel=kernel \
 	-DKERNEL \
 	-Ikernel/ \
+	-I. \
 	-Ilib/ansi
 
 KERNEL_ASFLAGS = \
@@ -36,6 +38,7 @@ KERNEL_SRC := \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.c) \
 	$(wildcard kernel/hw/$(CONFIG_ARCH)/*.s) \
 	$(wildcard lib/liballoc/*.c) \
+	$(wildcard lib/brutal/*.c) \
 	lib/ansi/string.c \
 	lib/ansi/assert.c \
 	lib/ansi/stdlib.c \
@@ -43,7 +46,8 @@ KERNEL_SRC := \
 	lib/navy/itoa.c \
 	lib/navy/debug.c \
 	lib/navy/bitmap.c \
-	lib/navy/handover.c
+	lib/navy/handover.c \
+	lib/navy/vec.c
 
 ifneq ($(LOADER), navy)
 	KERNEL_SRC += loader/$(LOADER)/$(LOADER).c

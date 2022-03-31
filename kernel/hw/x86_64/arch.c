@@ -8,7 +8,7 @@
 #include "pit.h"
 #include "pic.h"
 
-#include <hw/x86_64/asm.h>
+#include "hw/x86_64/asm.h"
 
 void hardware_init(Handover *handover)
 {

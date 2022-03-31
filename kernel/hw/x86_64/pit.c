@@ -1,6 +1,6 @@
 #include "pit.h"
 
-#include <x86_64/asm.h>
+#include "hw/x86_64/asm.h"
 
 static uint32_t pit_read_count(void)
 {

@@ -1,13 +1,17 @@
 #pragma once 
 
 #ifdef __x86_64__
-#   include <hw/x86_64/ctx.h>
+#   include "hw/x86_64/ctx.h"
 #endif
 
 #include "arch.h"
 
 #include <navy/range.h>
 #include <navy/vec.h>
+#include <navy/result.h>
+#include <brutal/str.h>
+#include <sys/types.h>
+
 
 typedef enum 
 {
@@ -19,7 +23,7 @@ typedef enum
 
 typedef struct 
 {
-    Context context;
+    Str name;
     uintptr_t sp;
     Range stack;
 
@@ -27,8 +31,11 @@ typedef struct
 
     TaskState state;
     int return_value;
+    Context context;
 } Task;
 
-Task *create_task(void);
 
-typedef Vec(Task) TaskQueue;
+typedef Vec(Task *) TaskQueue;
+typedef Option(Task *) TaskOption;
+
+Task *create_task(Str name, PmlOption space);

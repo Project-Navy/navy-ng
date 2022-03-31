@@ -1,5 +1,5 @@
 #include "pic.h"
-#include <x86_64/asm.h>
+#include "hw/x86_64/asm.h"
 
 void pic_init(void)
 {

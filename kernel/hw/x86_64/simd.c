@@ -65,3 +65,32 @@ void simd_ctx_save(void *ptr)
         asm_fxsave(ptr);
     }
 }
+
+static size_t simd_context_size(void)
+{
+    if (has_xsave)
+    {
+        return unwrap_or_panic(cpuid(CPUID_PROC_EXTENDED_STATE_ENUMERATION, 0)).ecx;
+    }
+    else 
+    {
+        return 512;
+    }
+}
+
+void simd_ctx_init(void *ptr)
+{
+    memcpy(ptr, initial_ctx, simd_context_size());
+}
+
+void simd_ctx_load(void *ptr)
+{
+    if (has_xsave)
+    {
+        asm_xrstor(ptr);
+    }
+    else  
+    {
+        asm_fxrstor(ptr);
+    }
+}

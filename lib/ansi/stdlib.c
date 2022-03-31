@@ -88,7 +88,24 @@ long random(void)
 #ifdef KERNEL
     raise_debug();
 #else 
-#   error "Implement me !"
+    for(;;);
 #endif
     __builtin_unreachable();
 }
+
+[[gnu::noreturn]] void exit(int status)
+{
+#ifdef KERNEL 
+    (void) status;
+#else 
+    syscall(SYS_EXIT, status);
+#endif
+    __builtin_unreachable();
+}
+
+#ifndef KERNEL 
+void *realloc(void *ptr, size_t size)
+{
+    return (void *) syscall(SYS_REALLOC, (uintptr_t) ptr, size);
+}
+#endif

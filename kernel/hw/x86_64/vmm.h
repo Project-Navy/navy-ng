@@ -57,7 +57,7 @@ static inline PmlEntry pml_make_entry(uintptr_t physical, bool is_user)
 }
 
 typedef Pml* VmmSpace;
-typedef Option(Pml) PmlOption;
+typedef Option(Pml *) PmlOption;
 typedef Option(Range) RangeOption;
 
 void vmm_init(Handover *handover);

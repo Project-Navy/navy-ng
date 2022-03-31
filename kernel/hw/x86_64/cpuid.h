@@ -4,6 +4,7 @@
 #include <navy/result.h>
 
 #define FEATURE_IDENTIFIERS_CPUID (1)
+#define CPUID_PROC_EXTENDED_STATE_ENUMERATION (13)
 
 typedef struct 
 {

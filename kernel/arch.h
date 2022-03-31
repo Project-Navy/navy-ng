@@ -19,3 +19,4 @@ void cli(void);
 void sti(void);
 VmmSpace space_create(void);
 VmmSpace get_address_space(void);
+bool sched_is_init(void);

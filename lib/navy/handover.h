@@ -42,10 +42,13 @@ typedef struct
 typedef struct 
 {
     size_t memmap_count;
+    size_t module_count;
 
     Module modules[LIMIT_MODULE_SIZE];
     Memmap memmaps[LIMIT_MEMORY_MAP_SIZE];
 } Handover;
 
-void parse_mmap(Handover *handover);
-void dump_mmap(Handover *handover);
+typedef Option(Module *) ModuleOption;
+
+void handover_dump_mmap(Handover *handover);
+ModuleOption handover_find_module(Handover *handover, Str name);

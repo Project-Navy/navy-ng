@@ -1,7 +1,8 @@
 #include "com.h"
+#include "hw/x86_64/asm.h"
 
 #include <stdbool.h>
-#include <x86_64/asm.h>
+#include <stdint.h>
 
 static bool is_serial_init = false;
 

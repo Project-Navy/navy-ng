@@ -73,14 +73,17 @@ static void stivale2_parse_module(Handover *handover, struct stivale2_struct_tag
     assert(modules->module_count <= LIMIT_MODULE_SIZE);
     Module *m;
 
+    handover->module_count = modules->module_count;
+
     for (size_t i = 0; i < modules->module_count; i++)
     {
         m = &handover->modules[i];
         struct stivale2_module module = modules->modules[i];
 
-        log$("Found module named {}", m->name);
         m->addr = (Range) {module.begin, module.end - module.begin};
         m->name = str$(module.string);
+
+        log$("Found module named {}", m->name);
     }
 }
 

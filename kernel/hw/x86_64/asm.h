@@ -131,6 +131,8 @@ enum xcr0_bits
     XCR0_CET_SUPERVISOR = (1 << 12)
 };
 
+
+
 static inline void write_xcr(uint32_t i, uint64_t value)
 {
     asm volatile ("xsetbv"
@@ -149,8 +151,53 @@ static inline void asm_fxsave(void *region)
     asm volatile("fxsave (%0)" ::"a"(region));
 }
 
+static inline void asm_fxrstor(void *region)
+{
+    asm volatile("fxrstor (%0)" ::"a"(region));
+}
+
+static inline void asm_xrstor(uint8_t *region)
+{
+    asm volatile("xrstor %0" ::"m"(*region), "a"(~(uintptr_t)0), "d"(~(uintptr_t)0)
+                 : "memory");
+}
 
 static inline void io_wait(void)
 {
     __asm__ volatile ("jmp 1f\n\t" "1:jmp 2f\n\t" "2:");
+}
+
+
+enum msr_star_reg
+{
+    STAR_KCODE_OFFSET = 32,
+    STAR_UCODE_OFFSET = 48,
+};
+
+enum msr_registers
+{
+    MSR_APIC = 0x1B,
+    MSR_EFER = 0xC0000080,
+    MSR_STAR = 0xC0000081,
+    MSR_LSTAR = 0xC0000082,
+    MSR_COMPAT_STAR = 0xC0000083,
+    MSR_SYSCALL_FLAG_MASK = 0xC0000084,
+    MSR_FS_BASE = 0xC0000100,
+    MSR_GS_BASE = 0xC0000101,
+    MSR_KERN_GS_BASE = 0xc0000102,
+};
+
+
+static inline void asm_write_msr(enum msr_registers msr, uint64_t value)
+{
+    uint32_t low = value & 0xFFFFFFFF;
+    uint32_t high = value >> 32;
+    asm volatile("wrmsr" :: "c"((uint64_t)msr), "a"(low), "d"(high));
+}
+
+static inline uint64_t asm_read_msr(enum msr_registers msr)
+{
+    uint32_t low, high;
+    asm volatile("rdmsr" : "=a"(low), "=d"(high) : "c"((uint64_t)msr));
+    return ((uint64_t) high << 32) | low;
 }

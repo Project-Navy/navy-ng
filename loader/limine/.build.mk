@@ -9,11 +9,13 @@ ifneq ($(CONFIG_ARCH), x86_64)
 	$(error Bad architecture)
 endif
 
-$(ISO): check_submodule $(KERNEL)
+$(ISO): check_submodule $(KERNEL) $(NAVY_NAMES)
 	make -C ./loader/limine/limine
-	mkdir -p $(CACHEDIR)/tmp/boot
+	mkdir -p $(CACHEDIR)/tmp/boot $(SYSROOT)/bin
 	cp -r $(SYSROOT)/* $(CACHEDIR)/tmp/
 	cp $(KERNEL) $(CACHEDIR)/tmp/boot/kernel.elf
+	cp $(BINDIR_NAVY)/* $(SYSROOT)/bin
+	rm $(SYSROOT)/bin/*.d
 	cp ./loader/limine/limine/{limine-cd.bin,limine-eltorito-efi.bin,limine.sys} $(CACHEDIR)/tmp/boot/
 
 	xorriso -as mkisofs -b /boot/limine-cd.bin \

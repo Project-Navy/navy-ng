@@ -1,6 +1,6 @@
 #include "rtc.h"
 
-#include <hw/x86_64/asm.h>
+#include "hw/x86_64/asm.h"
 
 static int is_updating(void)
 {

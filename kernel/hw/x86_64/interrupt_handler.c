@@ -1,9 +1,9 @@
 #include "arch.h"
+#include "sched.h"
 #include "hw/x86_64/rtc.h"
 #include "hw/x86_64/pic.h"
-
-#include <hw/x86_64/regs.h>
-#include <hw/x86_64/asm.h>
+#include "hw/x86_64/regs.h"
+#include "hw/x86_64/asm.h"
 
 #include <navy/fmt.h>
 #include <stdlib.h>
@@ -125,6 +125,10 @@ uint64_t interrupts_handler(uint64_t rsp)
 
         if (irq == 0)
         {
+            if (is_scheduler_enabled())
+            {
+                sched_yield(regs);
+            }
         }
 
     }

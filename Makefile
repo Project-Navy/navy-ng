@@ -13,6 +13,7 @@ ARFLAGS := rcs
 CACHEDIR = cache
 BINDIR = bin
 BINDIR_HOST = bin/host
+BINDIR_NAVY = bin/navy
 SYSROOT = sysroot
 
 MKCWD = @mkdir -p $(@D)
@@ -31,9 +32,7 @@ STD_CFLAGS = \
 	-std=gnu2x \
 	-Wvla \
 	-MD \
-	-Ilib \
-	-Ilib/hw \
-	-I. \
+	-Ilib/ \
 	-D__$(CONFIG_ARCH)__
 
 BINS :=
@@ -57,7 +56,7 @@ clean:
 	rm -rf $(BINDIR)
 	rm -rf $(CACHEDIR)
 
-all: $(BINS)
+all: $(KERNEL) $(NAVY_NAMES)
 
 .PHONY: clean run all 
-.DEFAULT_GOAL := $(KERNEL)
+.DEFAULT_GOAL := all
