@@ -33,10 +33,10 @@ static RangeOption vmm_get_pml(Pml *pml, size_t index)
     if (entry.present)
     {
         Range pml_range = {mmap_phys_to_kernel(entry.physical << 12), PAGE_SIZE};
-        return Some(RangeOption, pml_range);
+        return SOME(RangeOption, pml_range);
     }
 
-    return None(RangeOption);
+    return NONE(RangeOption);
 }
 
 static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
@@ -50,7 +50,7 @@ static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
     }
     else  
     {
-        Range target_range = unwrap_or_panic(pmm_alloc(PAGE_SIZE));
+        Range target_range = UNWRAP_OR_PANIC(pmm_alloc(PAGE_SIZE), "Out of memory");
         memset((void *) mmap_phys_to_kernel(target_range.base), 0, PAGE_SIZE);
         pml->entries[index] = pml_make_entry(target_range.base, is_user);
 
@@ -104,7 +104,7 @@ void vmm_switch_space(Pml *pml)
 
 void vmm_init(Handover *handover)
 {
-    Range kernel_range = unwrap_or_panic(pmm_alloc(PAGE_SIZE));
+    Range kernel_range = UNWRAP_OR_PANIC(pmm_alloc(PAGE_SIZE), "Out of memory");
     kernel_pml = (Pml *) mmap_phys_to_kernel(kernel_range.base);
     memset(kernel_pml, 0, kernel_range.length);
 
@@ -159,7 +159,7 @@ void vmm_unmap_page(Pml *page, uintptr_t vaddr)
 
     for (size_t i = limit_pml - 1; i > 0; i--)
     {
-        Range pml_range = unwrap_or_panic(vmm_get_pml(last_entry, PMLX_GET_INDEX(vaddr, i)));
+        Range pml_range = UNWRAP(vmm_get_pml(last_entry, PMLX_GET_INDEX(vaddr, i)));
         last_entry = (Pml *) pml_range.base;
     }
 
@@ -175,13 +175,13 @@ PmlOption vmm_create_space(void)
     PmmOption phys_option = pmm_alloc(PAGE_SIZE);
     Range phys_range;
 
-    if (phys_option.success == false)
+    if (phys_option.succ == false)
     {
-        return None(PmlOption);
+        return NONE(PmlOption);
     }
     else  
     {
-        phys_range = unwrap(phys_option);
+        phys_range = UNWRAP(phys_option);
     }
 
     Pml *space = (Pml *) mmap_phys_to_kernel(phys_range.base);
@@ -194,5 +194,5 @@ PmlOption vmm_create_space(void)
 
     UNLOCK(vmm);
 
-    return Some(PmlOption, space);
+    return SOME(PmlOption, space);
 }

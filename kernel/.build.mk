@@ -24,14 +24,14 @@ KERNEL_CFLAGS = \
 	-Ilib/ansi
 
 KERNEL_ASFLAGS = \
-	-felf64
+	-felf64 \
 
 KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link.ld
 KERNEL_LDFLAGS =  \
     -nostdlib \
     -static \
     -T$(KERNEL_LDSCRIPT) \
-    -z max-page-size=0x1000 \
+    -z max-page-size=0x1000 
 
 KERNEL_SRC := \
 	$(wildcard kernel/*.c) \
@@ -49,8 +49,10 @@ KERNEL_SRC := \
 	lib/navy/handover.c \
 	lib/navy/vec.c
 
-ifneq ($(LOADER), navy)
+ifneq ($(LOADER), stivale)
 	KERNEL_SRC += loader/$(LOADER)/$(LOADER).c
+else 
+	KERNEL_SRC += loader/limine/stivale.c
 endif
 
 KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))

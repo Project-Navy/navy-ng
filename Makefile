@@ -42,6 +42,8 @@ include pkg/.build.mk
 
 ifeq ($(LOADER), navy)
 	include loader/navy/.build.mk
+else ifeq ($(LOADER), stivale)
+	include loader/limine/.build.mk
 else ifeq ($(LOADER), limine)
 	include loader/limine/.build.mk
 endif

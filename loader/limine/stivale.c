@@ -9,7 +9,7 @@
 
 static uint8_t stack[STACK_SIZE];
 void stivale2_entry(struct stivale2_struct *stivale2);
-extern void _start(Handover *handover);
+extern void bootstrap(Handover *handover);
 
 [[gnu::section(".stivale2hdr"), gnu::used]] static struct stivale2_header stivale_hdr = {
     .entry_point = (uintptr_t) stivale2_entry,
@@ -120,5 +120,5 @@ void stivale2_entry(struct stivale2_struct *stivale2)
     // serial_puts("\033[2J\033[H");
 
     Handover handover = stivale2_parse_header(stivale2);
-    _start(&handover);
+    bootstrap(&handover);
 }

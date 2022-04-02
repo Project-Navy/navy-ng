@@ -15,9 +15,9 @@ ModuleOption handover_find_module(Handover *handover, Str name)
     {
         if (str_eq(handover->modules[i].name, name))
         {
-            return Some(ModuleOption, &handover->modules[i]);
+            return SOME(ModuleOption, &handover->modules[i]);
         }
     }
 
-    return None(ModuleOption);
+    return NONE(ModuleOption);
 }

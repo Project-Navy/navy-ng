@@ -113,14 +113,14 @@ PmmOption pmm_alloc(size_t count)
     {
         if (last_index == 0)
         {
-            return None(PmmOption);
+            return NONE(PmmOption);
         }
 
         last_index = 0;
         return pmm_alloc(count);
     }
 
-    return Some(PmmOption, range);
+    return SOME(PmmOption, range);
 }
 
 Range get_pmm_bitmap_range(void)

@@ -14,7 +14,7 @@ static uint8_t tick = 0;
 void sched_init(void)
 {
     vec_init(&tasks);
-    vec_push(&tasks, create_task(str$("Boot"), Some(PmlOption, get_address_space())));
+    vec_push(&tasks, create_task(str$("Boot"), SOME(PmlOption, get_address_space())));
     scheduler_enabled = true;
 }
 

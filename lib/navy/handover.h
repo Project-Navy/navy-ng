@@ -1,9 +1,10 @@
 #pragma once
 
 #include <brutal/str.h>
+#include <brutal/result.h>
 #include <navy/range.h>
-#include <navy/result.h>
 #include <navy/macro.h>
+#include <navy/option.h>
 
 #define LIMIT_MEMORY_MAP_SIZE 64
 #define LIMIT_MODULE_SIZE 64

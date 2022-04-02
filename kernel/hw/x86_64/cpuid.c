@@ -12,12 +12,12 @@ CpuIDResult cpuid(uint32_t leaf, uint32_t subleaf)
 
     if (leaf > cpuid_max)
     {
-        return Err(CpuIDResult, cpuid_max);
+        return ERR(CpuIDResult, cpuid_max);
     }
 
     asm volatile ("cpuid"
         : "=a" (result.eax), "=b" (result.ebx), "=c" (result.ecx), "=d" (result.edx)
         : "a" (leaf), "c" (subleaf));
 
-    return Ok(CpuIDResult, result);
+    return OK(CpuIDResult, result);
 }

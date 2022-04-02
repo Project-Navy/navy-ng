@@ -33,7 +33,7 @@ void xcr0_init(bool has_avx, bool has_avx512)
 void simd_init(void)
 {
     CpuIDResult features_result = cpuid(FEATURE_IDENTIFIERS_CPUID, 0);
-    CpuID features = unwrap_or_panic(features_result);
+    CpuID features = UNWRAP(features_result);
 
     write_cr0(read_cr0() & ~CR0_EM);
     write_cr0(read_cr0() | CR0_MP);
@@ -70,7 +70,7 @@ static size_t simd_context_size(void)
 {
     if (has_xsave)
     {
-        return unwrap_or_panic(cpuid(CPUID_PROC_EXTENDED_STATE_ENUMERATION, 0)).ecx;
+        return UNWRAP(cpuid(CPUID_PROC_EXTENDED_STATE_ENUMERATION, 0)).ecx;
     }
     else 
     {

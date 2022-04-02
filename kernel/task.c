@@ -16,13 +16,13 @@ Task *create_task(Str name, PmlOption space)
 
     self->sp = self->stack.base + self->stack.length;
 
-    if (space.success)
+    if (space.ok)
     {
-        self->space = unwrap(space);
+        self->space = UNWRAP(space);
     }
     else  
     {
-        self->space = unwrap_or_panic(vmm_create_space());
+        self->space = UNWRAP_OR_PANIC(vmm_create_space(), "Couldn't create an address space");
     }
 
     return self;

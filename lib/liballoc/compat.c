@@ -1,6 +1,6 @@
 #include "hw/x86_64/vmm.h"
 #include <navy/lock.h>
-#include <navy/result.h>
+#include <brutal/result.h>
 
 #ifdef KERNEL 
 #   include "arch.h"
@@ -24,7 +24,7 @@ void *liballoc_alloc(int pages)
 {
 #ifdef KERNEL 
     VmmSpace space = get_address_space();
-    Range addr_range = unwrap_or_panic(pmm_alloc(pages * PAGE_SIZE));
+    Range addr_range = UNWRAP_OR_PANIC(pmm_alloc(pages * PAGE_SIZE), "Out of memory");
 
     vmm_map_range(space, (Range) {
         .base = mmap_phys_to_kernel(addr_range.base),

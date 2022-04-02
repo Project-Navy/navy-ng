@@ -1,7 +1,7 @@
 #pragma once
 
 #include "navy/lock.h"
-#include <navy/result.h>
+#include <brutal/result.h>
 #include <navy/range.h>
 #include <navy/handover.h>
 #include <navy/bitmap.h>

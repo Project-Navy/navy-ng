@@ -6,7 +6,8 @@
 #include <navy/lock.h>
 #include <navy/debug.h>
 #include <navy/elf.h>
-#include <navy/result.h>
+#include <navy/option.h>
+#include <brutal/result.h>
 
 static DECLARE_LOCK(elfloader);
 
@@ -20,26 +21,27 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
     if(header->e_ident[EI_MAG0] != 0x7f || header->e_ident[EI_MAG1] != 'E' || 
         header->e_ident[EI_MAG2] != 'L' || header->e_ident[EI_MAG3] != 'F')
     {
-        return None(TaskOption);
+        return NONE(TaskOption);
     }
 
 
     log$("Loading {} ({a} - {a})", m->name, m->addr.base, m->addr.base + m->addr.length);
-    Elf64_Phdr *phdr = (Elf64_Phdr *) m->addr.length;
+    Elf64_Phdr *phdr = (Elf64_Phdr *) m->addr.base + header->e_phoff;
     PmlOption space_option = vmm_create_space();
 
-    if (!space_option.success)
+    if (!space_option.ok)
     {
-        return None(TaskOption);
+        return NONE(TaskOption);
     }
     
-    VmmSpace space = unwrap(space_option);
+    VmmSpace space = UNWRAP(space_option);
 
     for (size_t i = 0; i < header->e_phnum; i++)
     {
+        log$("{}", phdr->p_type);
         if (phdr->p_type == PT_LOAD)
         {
-            Range addr = unwrap_or_panic(pmm_alloc(ALIGN_UP(phdr->p_memsz, PAGE_SIZE)));
+            Range addr = UNWRAP_OR_PANIC(pmm_alloc(ALIGN_UP(phdr->p_memsz, PAGE_SIZE)), "Out of memory");
             vmm_map_range(space, (Range) {
                 .base = phdr->p_vaddr,
                 .length = addr.length
@@ -49,13 +51,13 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
             memcpy((void *) (mmap_phys_to_kernel(addr.base) + phdr->p_filesz), 0, phdr->p_memsz - phdr->p_filesz);
         }
 
-        phdr = (Elf64_Phdr *) (phdr + header->e_phentsize);
+        phdr = (Elf64_Phdr *) (m->addr.base + header->e_phoff + (i * header->e_phentsize));
     }
 
-    Task *task = create_task(str$(m->name), Some(PmlOption, space));
+    Task *task = create_task(str$(m->name), SOME(PmlOption, space));
     context_create(&task->context, header->e_entry, task->sp, args);
 
     UNLOCK(elfloader);
 
-    return Some(TaskOption, task);
+    return SOME(TaskOption, task);
 }

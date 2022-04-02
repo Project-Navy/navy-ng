@@ -25,7 +25,7 @@ NAVY_CFLAGS := \
 NAVY_LDFLAGS := \
 	-nostdlib \
 	-static \
-	-Tkernel/hw/$(CONFIG_ARCH)/link.ld
+	-Tkernel/hw/$(CONFIG_ARCH)/link.ld 
 
 LIBS_HOST_BIN=$(BINDIR_HOST)/libnavy.a
 

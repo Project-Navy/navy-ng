@@ -4,7 +4,7 @@
 #include <stdbool.h>
 #include <navy/macro.h>
 #include <navy/handover.h>
-#include <navy/result.h>
+#include <brutal/result.h>
 
 #define PMLX_GET_INDEX(addr, level)                                                                \
     (((uint64_t) addr & ((uint64_t) 0x1ff << (12 + level * 9))) >> (12 + level * 9))

@@ -8,7 +8,7 @@
 
 #include <navy/range.h>
 #include <navy/vec.h>
-#include <navy/result.h>
+#include <brutal/result.h>
 #include <brutal/str.h>
 #include <sys/types.h>
 
