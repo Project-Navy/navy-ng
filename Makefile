@@ -60,5 +60,5 @@ clean:
 
 all: $(KERNEL) $(NAVY_NAMES)
 
-.PHONY: clean run all 
+.PHONY: clean run all
 .DEFAULT_GOAL := all

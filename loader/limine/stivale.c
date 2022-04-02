@@ -11,11 +11,23 @@ static uint8_t stack[STACK_SIZE];
 void stivale2_entry(struct stivale2_struct *stivale2);
 extern void bootstrap(Handover *handover);
 
+static struct stivale2_header_tag_framebuffer fb_tag = {
+    .tag = {
+        .identifier = STIVALE2_HEADER_TAG_FRAMEBUFFER_ID,
+        .next = 0
+    },
+
+    .framebuffer_width  = 0,
+    .framebuffer_height = 0,
+    .framebuffer_bpp    = 0
+};
+
+
 [[gnu::section(".stivale2hdr"), gnu::used]] static struct stivale2_header stivale_hdr = {
     .entry_point = (uintptr_t) stivale2_entry,
     .stack = (uintptr_t) stack + sizeof(stack),
     .flags = (1 << 1),
-    .tags = 0,
+    .tags = (uintptr_t) &fb_tag,
 };
 
 static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_memmap *memmap)
