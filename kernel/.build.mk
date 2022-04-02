@@ -26,7 +26,7 @@ KERNEL_CFLAGS = \
 KERNEL_ASFLAGS = \
 	-felf64 \
 
-KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link.ld
+KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link_stivale.ld
 KERNEL_LDFLAGS =  \
     -nostdlib \
     -static \
@@ -49,7 +49,13 @@ KERNEL_SRC := \
 	lib/navy/handover.c \
 	lib/navy/vec.c
 
-KERNEL_SRC += loader/$(LOADER).c
+ifeq ($(shell test -e loader/$(LOADER).c && echo -n yes),yes)
+    KERNEL_SRC += loader/$(LOADER).c
+endif
+
+ifeq ($(shell test -e loader/$(LOADER).s && echo -n yes),yes)
+    KERNEL_SRC += loader/$(LOADER).s
+endif
 
 KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
 DEPENDENCIES += $(KERNEL_OBJ:.o=.d)

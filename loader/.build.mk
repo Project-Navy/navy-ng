@@ -1,5 +1,3 @@
-KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link_stivale.ld
-
 ifneq ($(CONFIG_ARCH), x86_64)
 	$(error Bad architecture)
 endif
@@ -9,6 +7,7 @@ $(SYSROOT)/EFI/BOOT/BOOTX64.EFI:
 	mkdir -p $(SYSROOT)/EFI/BOOT
 	wget https://github.com/limine-bootloader/limine/raw/v3.0-branch-binary/BOOTX64.EFI -O $@
 else ifeq ($(LOADER), brutal)
+KERNEL_SRC += loader/brutal.s
 $(SYSROOT)/EFI/BOOT/BOOTX64.EFI:
 	$(error "Coming soon...")
 endif
@@ -27,7 +26,8 @@ run: $(SYSROOT)/EFI/BOOT/BOOTX64.EFI $(CACHEDIR)/OVMF.fd rootfs
 	$(QEMU) $(QEMUFLAGS) \
 		-drive file=fat:rw:$(SYSROOT),media=disk,format=raw \
 		-bios $(CACHEDIR)/OVMF.fd \
-		-no-reboot
+		-no-reboot \
+		-serial mon:stdio
 
 run-nogui: $(SYSROOT)/EFI/BOOT/BOOTX64.EFI $(CACHEDIR)/OVMF.fd rootfs
 	$(QEMU) $(QEMUFLAGS) \
