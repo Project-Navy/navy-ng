@@ -9,7 +9,7 @@
 typedef uintptr_t PhysicalAddress;
 typedef Option(Range) PmmOption;
 
-PmmOption pmm_alloc(size_t count);
+PmmOption pmm_alloc(size_t size);
 void pmm_free(Range page);
 void pmm_set_used(Range page);
 void pmm_init(Handover *handover);

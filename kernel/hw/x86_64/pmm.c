@@ -83,11 +83,11 @@ void pmm_free(Range page)
     UNLOCK(pmm);
 }
 
-PmmOption pmm_alloc(size_t count)
+PmmOption pmm_alloc(size_t size)
 {
     Range range = {0};
 
-    for (size_t i = last_index; i < bitmap.length && range.length < count; i++)
+    for (size_t i = last_index; i < bitmap.length && range.length < size; i++)
     {
         if (!bitmap_is_bit_set(&bitmap, i))
         {
@@ -104,7 +104,7 @@ PmmOption pmm_alloc(size_t count)
         }
     }
 
-    if (range.length >= count)
+    if (range.length >= size)
     {
         last_index = (range.base + range.length) / PAGE_SIZE; 
         pmm_set_used(range);
@@ -117,7 +117,7 @@ PmmOption pmm_alloc(size_t count)
         }
 
         last_index = 0;
-        return pmm_alloc(count);
+        return pmm_alloc(size);
     }
 
     return SOME(PmmOption, range);
