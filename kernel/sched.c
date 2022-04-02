@@ -14,7 +14,7 @@ static uint8_t tick = 0;
 void sched_init(void)
 {
     vec_init(&tasks);
-    vec_push(&tasks, create_task(str$("Boot"), SOME(PmlOption, get_address_space())));
+    vec_push(&tasks, create_task(str$("Boot"), SOME(PmlOption, get_address_space()), 0, (TaskArgs) {}));
     scheduler_enabled = true;
 }
 
@@ -41,8 +41,9 @@ void sched_yield(Regs *regs)
 
         while ((current_task = tasks.data[next_pid()])->state != TASK_RUNNING);
         
-        context_switch(&current_task->context, regs);
         log$("Switching to {}", current_task->name);
+
+        context_switch(&current_task->context, regs);
         vmm_switch_space(current_task->space);
     }
 

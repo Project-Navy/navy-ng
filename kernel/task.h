@@ -24,7 +24,6 @@ typedef enum
 typedef struct 
 {
     Str name;
-    uintptr_t sp;
     Range stack;
 
     VmmSpace space;
@@ -38,4 +37,4 @@ typedef struct
 typedef Vec(Task *) TaskQueue;
 typedef Option(Task *) TaskOption;
 
-Task *create_task(Str name, PmlOption space);
+Task *create_task(Str name, PmlOption space, uintptr_t ip, TaskArgs args);

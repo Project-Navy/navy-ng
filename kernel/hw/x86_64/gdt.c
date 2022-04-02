@@ -1,4 +1,7 @@
 #include "gdt.h"
+#include "const.h"
+
+#include <stdlib.h>
 
 static struct gdt gdt;
 static struct gdt_pointer ptr = {.limit = sizeof(struct gdt) - 1, .base = (uintptr_t) &gdt};
@@ -67,4 +70,11 @@ void gdt_reload(void)
     __asm__ volatile("cli");
     gdt_flush((uintptr_t) &ptr);
     __asm__ volatile("sti");
+}
+
+void intstack_init(void)
+{
+    tss.ist[0] = (uint64_t) malloc(STACK_SIZE) + STACK_SIZE;
+    tss.ist[1] = (uint64_t) malloc(STACK_SIZE) + STACK_SIZE;
+    tss.rsp[0] = (uint64_t) malloc(STACK_SIZE) + STACK_SIZE;
 }

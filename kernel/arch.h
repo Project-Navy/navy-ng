@@ -6,6 +6,7 @@
 #   include "hw/x86_64/ctx.h"
 #   include "hw/x86_64/vmm.h"
 #   include "hw/x86_64/pmm.h"
+#   include "hw/x86_64/regs.h"
 #else 
 #   error "Unknown architecture"
 #endif

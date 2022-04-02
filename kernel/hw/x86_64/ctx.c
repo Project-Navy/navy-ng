@@ -3,10 +3,11 @@
 #include "asm.h"
 
 #include <navy/lock.h>
+#include <stdlib.h>
 
 static DECLARE_LOCK(ctx);
 
-void context_create(Context *ctx, uintptr_t ip, uintptr_t sp, TaskArgs args)
+void context_create(Context *ctx, uintptr_t ip, TaskArgs args)
 {
     LOCK(ctx);
 
@@ -15,7 +16,9 @@ void context_create(Context *ctx, uintptr_t ip, uintptr_t sp, TaskArgs args)
     regs.cs = 0x23;
     regs.ss = 0x1b;
     regs.rip = ip;
-    regs.rsp = sp;
+    regs.rsp = USER_STACK_BASE + STACK_SIZE;
+    regs.rbp = USER_STACK_BASE;
+    regs.rflags = 0x202;
 
     regs.rdi = args.arg1;
     regs.rsi = args.arg2;
@@ -24,6 +27,9 @@ void context_create(Context *ctx, uintptr_t ip, uintptr_t sp, TaskArgs args)
     regs.r8 = args.arg5;
 
     ctx->regs = regs;
+
+    ctx->syscall_kernel_bstack = (uintptr_t) malloc(STACK_SIZE);
+    ctx->syscall_kernel_stack = ctx->syscall_kernel_bstack + STACK_SIZE;
 
     simd_ctx_init(ctx->simd);
 
