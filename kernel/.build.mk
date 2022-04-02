@@ -49,11 +49,7 @@ KERNEL_SRC := \
 	lib/navy/handover.c \
 	lib/navy/vec.c
 
-ifneq ($(LOADER), stivale)
-	KERNEL_SRC += loader/$(LOADER)/$(LOADER).c
-else 
-	KERNEL_SRC += loader/limine/stivale.c
-endif
+KERNEL_SRC += loader/$(LOADER).c
 
 KERNEL_OBJ := $(patsubst %, $(BINDIR_KERNEL)/%.o, $(KERNEL_SRC))
 DEPENDENCIES += $(KERNEL_OBJ:.o=.d)

@@ -1,5 +1,5 @@
 CONFIG_ARCH ?= x86_64
-LOADER ?= limine
+LOADER ?= stivale
 
 ifeq ($(CONFIG_ARCH), x86_64)
 	AS := nasm
@@ -39,22 +39,10 @@ BINS :=
 
 include kernel/.build.mk
 include pkg/.build.mk
-
-ifeq ($(LOADER), navy)
-	include loader/navy/.build.mk
-else ifeq ($(LOADER), stivale)
-	include loader/limine/.build.mk
-else ifeq ($(LOADER), limine)
-	include loader/limine/.build.mk
-endif
-
-$(CACHEDIR)/OVMF.fd:
-	$(MKCWD)
-	wget https://retrage.github.io/edk2-nightly/bin/DEBUGX64_OVMF.fd
-	mv DEBUGX64_OVMF.fd $@
+include loader/.build.mk
 
 clean:
-	rm -f $(BINS)
+	rm -f $(BINS) $(SYSROOT)/EFI/BOOT/BOOTX64.EFI
 	rm -rf $(BINDIR)
 	rm -rf $(CACHEDIR)
 

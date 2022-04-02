@@ -1,6 +1,6 @@
 #include <assert.h>
 #include <stdint.h>
-#include <stivale/stivale2.h>
+#include <loader/stivale2.h>
 #include <navy/handover.h>
 #include <navy/debug.h>
 #include <navy/range.h>
@@ -62,7 +62,6 @@ static void stivale2_parse_mmap(Handover *handover, struct stivale2_struct_tag_m
                 m->type = MEMMAP_FRAMEBUFFER;
                 break;
             }
-
 
             case STIVALE2_MMAP_USABLE:
             {
