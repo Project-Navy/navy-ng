@@ -37,4 +37,4 @@ typedef struct
 typedef Vec(Task *) TaskQueue;
 typedef Option(Task *) TaskOption;
 
-Task *create_task(Str name, PmlOption space, uintptr_t ip, TaskArgs args);
+Task *create_task(Str name, PmlOption space);

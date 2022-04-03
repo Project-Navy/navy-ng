@@ -1,6 +1,7 @@
 #include "ctx.h"
 #include "simd.h"
 #include "asm.h"
+#include "gdt.h"
 
 #include <navy/lock.h>
 #include <stdlib.h>
@@ -13,8 +14,8 @@ void context_create(Context *ctx, uintptr_t ip, TaskArgs args)
 
     Regs regs = {};
 
-    regs.cs = 0x23;
-    regs.ss = 0x1b;
+    regs.cs = (GDT_USER_CODE * 8) | 3;
+    regs.ss = (GDT_USER_DATA * 8) | 3;
     regs.rip = ip;
     regs.rsp = USER_STACK_BASE + STACK_SIZE;
     regs.rbp = USER_STACK_BASE;

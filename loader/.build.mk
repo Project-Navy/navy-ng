@@ -27,7 +27,7 @@ run: $(SYSROOT)/EFI/BOOT/BOOTX64.EFI $(CACHEDIR)/OVMF.fd rootfs
 		-drive file=fat:rw:$(SYSROOT),media=disk,format=raw \
 		-bios $(CACHEDIR)/OVMF.fd \
 		-no-reboot \
-		-serial mon:stdio
+		-serial stdio
 
 run-nogui: $(SYSROOT)/EFI/BOOT/BOOTX64.EFI $(CACHEDIR)/OVMF.fd rootfs
 	$(QEMU) $(QEMUFLAGS) \

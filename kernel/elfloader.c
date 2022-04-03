@@ -1,5 +1,6 @@
 #include "arch.h"
 #include "elfloader.h"
+#include "hw/x86_64/ctx.h"
 #include "task.h"
 
 #include <navy/lock.h>
@@ -51,7 +52,8 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
         phdr = (Elf64_Phdr *) (m->addr.base + header->e_phoff + (i * header->e_phentsize));
     }
 
-    Task *task = create_task(str$(m->name), SOME(PmlOption, space), header->e_entry, args);
+    Task *task = create_task(str$(m->name), SOME(PmlOption, space));
+    context_create(&task->context, header->e_entry, args);
 
     UNLOCK(elfloader);
 

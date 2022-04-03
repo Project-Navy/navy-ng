@@ -5,7 +5,7 @@
 #include <brutal/str.h>
 #include <stdlib.h>
 
-Task *create_task(Str name, PmlOption space, uintptr_t ip, TaskArgs args)
+Task *create_task(Str name, PmlOption space)
 {
     Task *self = (Task *) calloc(sizeof(Task), 1);
     self->state = TASK_RUNNING;
@@ -25,11 +25,6 @@ Task *create_task(Str name, PmlOption space, uintptr_t ip, TaskArgs args)
         .base = USER_STACK_BASE,
         .length = STACK_SIZE 
     }, self->stack, true);
-
-    if (ip > 0)
-    {
-        context_create(&self->context, ip, args);
-    }
 
     return self;
 }
