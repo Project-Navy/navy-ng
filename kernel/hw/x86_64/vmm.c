@@ -97,7 +97,8 @@ void vmm_switch_space(Pml *pml)
 {
     LOCK(vmm);
 
-    log$("It's borked ? {a}", mmap_kernel_to_phys((uintptr_t) pml));
+    log$("Addr: {a}", (uintptr_t) pml);
+
     write_cr3(mmap_kernel_to_phys((uintptr_t) pml));
 
     UNLOCK(vmm);

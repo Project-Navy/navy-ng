@@ -58,6 +58,7 @@ void simd_ctx_save(void *ptr)
 {
     if (has_xsave)
     {
+        log$("OK");
         asm_xsave(ptr);
     }
     else
