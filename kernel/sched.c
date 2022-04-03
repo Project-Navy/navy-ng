@@ -41,7 +41,7 @@ void sched_yield(Regs *regs)
 
         while ((current_task = tasks.data[next_pid()])->state != TASK_RUNNING);
         
-        log$("Switching to {}", current_task->name);
+        //log$("Switching to {}", current_task->name);
 
         context_switch(&current_task->context, regs);
         vmm_switch_space(current_task->space);

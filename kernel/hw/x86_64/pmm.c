@@ -54,7 +54,7 @@ void pmm_init(Handover *handover)
     }
 
     pmm_set_used((Range) {
-        .base = mmap_kernel_to_phys((PhysicalAddress) bitmap.buffer),
+        .base = mmap_kernel_to_phys((uintptr_t) bitmap.buffer),
         .length = bitmap.length
     });
 }

@@ -1,3 +1,4 @@
+#include "hw/x86_64/const.h"
 #include "hw/x86_64/vmm.h"
 #include <navy/lock.h>
 #include <brutal/result.h>
@@ -23,7 +24,7 @@ int liballoc_unlock(void)
 void *liballoc_alloc(int pages)
 {
 #ifdef KERNEL 
-    VmmSpace space = get_address_space();
+    VmmSpace space = vmm_get_kernel_pml();
     Range addr_range = UNWRAP_OR_PANIC(pmm_alloc(pages * PAGE_SIZE), "Out of memory");
 
     vmm_map_range(space, (Range) {
@@ -40,7 +41,7 @@ void *liballoc_alloc(int pages)
 int liballoc_free(void* ptr, int pages)
 {
 #ifdef KERNEL 
-    VmmSpace space = get_address_space();
+    VmmSpace space = vmm_get_kernel_pml();
     vmm_unmap_page(space, (uintptr_t) ptr);
     pmm_free((Range) {
         .base = mmap_kernel_to_phys((uintptr_t) ptr),

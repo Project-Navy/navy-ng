@@ -6,7 +6,6 @@
 #include <navy/handover.h>
 #include <navy/bitmap.h>
 
-typedef uintptr_t PhysicalAddress;
 typedef Option(Range) PmmOption;
 
 PmmOption pmm_alloc(size_t size);

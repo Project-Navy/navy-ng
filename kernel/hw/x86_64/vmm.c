@@ -58,7 +58,7 @@ static Range vmm_get_pml_alloc(Pml *pml, size_t index, bool is_user)
     }
 }
 
-static void vmm_map_page(Pml *pml, VirtualAddress virt, PhysicalAddress phys, bool is_user)
+static void vmm_map_page(Pml *pml, uintptr_t virt, uintptr_t phys, bool is_user)
 {
     LOCK(vmm);
 
@@ -97,7 +97,8 @@ void vmm_switch_space(Pml *pml)
 {
     LOCK(vmm);
 
-    write_cr3(mmap_kernel_to_phys((PhysicalAddress) pml));
+    log$("It's borked ? {a}", mmap_kernel_to_phys((uintptr_t) pml));
+    write_cr3(mmap_kernel_to_phys((uintptr_t) pml));
 
     UNLOCK(vmm);
 }
@@ -195,4 +196,9 @@ PmlOption vmm_create_space(void)
     UNLOCK(vmm);
 
     return SOME(PmlOption, space);
+}
+
+Pml *vmm_get_kernel_pml(void)
+{
+    return kernel_pml;
 }

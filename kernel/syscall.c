@@ -5,6 +5,7 @@
 
 int64_t syscall_handler(Regs *regs)
 {
-    log$("Got syscall {}", regs->rax);
+    (void) regs;
+    serial_puts("Hello Syscall world !\n");
     return 0;
 }
