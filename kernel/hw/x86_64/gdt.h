@@ -70,6 +70,7 @@ struct [[gnu::packed]] gdt
 
 void gdt_init(void);
 void gdt_reload(void);
+void intstack_init(void);
 
 extern void gdt_flush(uintptr_t ptr);
 extern void tss_flush(void);

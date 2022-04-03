@@ -1,6 +1,6 @@
+#include "arch.h"
 #include "elfloader.h"
 #include "hw/x86_64/ctx.h"
-#include "hw/x86_64/vmm.h"
 #include "task.h"
 
 #include <navy/lock.h>
@@ -24,7 +24,6 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
         return NONE(TaskOption);
     }
 
-
     log$("Loading {} ({a} - {a})", m->name, m->addr.base, m->addr.base + m->addr.length);
     Elf64_Phdr *phdr = (Elf64_Phdr *) m->addr.base + header->e_phoff;
     PmlOption space_option = vmm_create_space();
@@ -38,7 +37,6 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
 
     for (size_t i = 0; i < header->e_phnum; i++)
     {
-        log$("{}", phdr->p_type);
         if (phdr->p_type == PT_LOAD)
         {
             Range addr = UNWRAP_OR_PANIC(pmm_alloc(ALIGN_UP(phdr->p_memsz, PAGE_SIZE)), "Out of memory");
@@ -55,7 +53,7 @@ TaskOption load_elf_module(Module *m, TaskArgs args)
     }
 
     Task *task = create_task(str$(m->name), SOME(PmlOption, space));
-    context_create(&task->context, header->e_entry, task->sp, args);
+    context_create(&task->context, header->e_entry, args);
 
     UNLOCK(elfloader);
 

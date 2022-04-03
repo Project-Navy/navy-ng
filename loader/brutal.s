@@ -19,7 +19,7 @@ _kstart:
 	xor rbp, rbp
 
     extern brutal_entry
-    call brutalentry
+    call brutal_entry
 
 .hang:
 	cli

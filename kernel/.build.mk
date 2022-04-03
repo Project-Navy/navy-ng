@@ -25,6 +25,8 @@ KERNEL_CFLAGS = \
 
 KERNEL_ASFLAGS = \
 	-felf64 \
+	-F dwarf \
+	-g
 
 KERNEL_LDSCRIPT = kernel/hw/$(CONFIG_ARCH)/link_stivale.ld
 KERNEL_LDFLAGS =  \

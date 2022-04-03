@@ -62,6 +62,7 @@ typedef Option(Range) RangeOption;
 
 void vmm_init(Handover *handover);
 void vmm_switch_space(Pml *pml);
-PmlOption vmm_create_space(void);
 void vmm_map_range(Pml *pml, Range virt, Range phys, bool is_user);
 void vmm_unmap_page(Pml *page, uintptr_t vaddr);
+PmlOption vmm_create_space(void);
+Pml *vmm_get_kernel_pml(void);

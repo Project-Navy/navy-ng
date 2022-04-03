@@ -24,7 +24,6 @@ typedef enum
 typedef struct 
 {
     Str name;
-    uintptr_t sp;
     Range stack;
 
     VmmSpace space;

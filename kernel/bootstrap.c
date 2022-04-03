@@ -1,6 +1,5 @@
 #include "arch.h"
 #include "elfloader.h"
-#include "hw/x86_64/ctx.h"
 #include "sched.h"
 
 #include <stdlib.h>
