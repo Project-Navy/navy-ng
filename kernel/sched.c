@@ -1,6 +1,8 @@
 #include "arch.h"
 #include "hw/x86_64/vmm.h"
+#include "navy/option.h"
 #include "sched.h"
+#include "task.h"
 #include <assert.h>
 #include <navy/debug.h>
 #include <navy/vec.h>
@@ -18,9 +20,14 @@ void sched_init(void)
     scheduler_enabled = true;
 }
 
+bool sched_is_init(void)
+{
+    return scheduler_enabled;
+}
+
 static pid_t next_pid(void)
 {
-    if (current_pid + 1 == (int) tasks.length)
+    if ((int) current_pid + 1 == (int) tasks.length)
     {
         current_pid = -1;
     }
@@ -36,18 +43,23 @@ void sched_yield(Regs *regs)
     if (++tick >= SWITCH_TICK)
     {
         tick = 0;
+
         Task *current_task = tasks.data[current_pid];
+        context_save(&current_task->context, regs);
 
         while ((current_task = tasks.data[next_pid()])->state != TASK_RUNNING);
-        log$("Switching to {} (PID: {})", current_task->name, current_pid);
-        
 
         context_switch(&current_task->context, regs);
-        context_save(&current_task->context, regs);
         vmm_switch_space(current_task->space);
     }
 
     UNLOCK(scheduler);
+}
+
+void sched_force_yield() 
+{
+    tick = SWITCH_TICK;
+    sti();
 }
 
 bool is_scheduler_enabled(void)
@@ -62,4 +74,33 @@ void sched_push_task(Task *task)
     vec_push(&tasks, task);
 
     UNLOCK(scheduler);
+}
+
+Task *sched_current_task(void)
+{
+    return tasks.data[current_pid];
+}
+
+pid_t sched_current_pid(void)
+{
+    return current_pid;
+}
+
+void sched_idle(void)
+{
+    for (size_t i = 0; i < tasks.length; i++)
+    {
+        Task *task = tasks.data[i];
+        
+        LOCK(scheduler);
+
+        if (task->state == TASK_DEAD && task->context.syscall_kernel_bstack != 0)
+        {
+            free((void *) task->context.syscall_kernel_bstack);
+            task->context.syscall_kernel_bstack = 0;
+        }
+
+        UNLOCK(scheduler);
+    }
+
 }

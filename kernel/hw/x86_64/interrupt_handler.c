@@ -90,7 +90,13 @@ static void exception_handler(Regs *regs)
 
     print_format(serial_puts, "\033[31m!!\033[33m-----------------------------------------------------------------------------------\033[0m\n");
     print_format(serial_puts, "\n\tKERNEL PANIC\n\t\033[51m{}\033[0m\n\t", comments[funny_id]);
-    print_format(serial_puts, "Exception {} (0x{x}) Err: {d}\n\n", _exception_messages[regs->intno], regs->intno, regs->err);
+    print_format(serial_puts, "Exception {} (0x{x}) Err: {d}\n\t", _exception_messages[regs->intno], regs->intno, regs->err);
+
+    if (sched_is_init())
+    {
+        print_format(serial_puts, "PID: {} ({})\n\n", sched_current_pid(), sched_current_task()->name);
+    }
+
     print_format(serial_puts, "RAX {a} RBX {a} RCX {a} RDX {a}\n", regs->rax,
                  regs->rbx, regs->rcx, regs->rdx);
     print_format(serial_puts, "RSI {a} RDI {a} RBP {a} RSP {a}\n", regs->rsi,

@@ -1,8 +1,9 @@
 #include <brutal/str.h>
 #include <unistd.h>
+#include <navy/debug.h>
 
 int main(void)
 {
-    sys_log("Hello, World !\n");
-    for(;;);
+    log$("Hello, World !");
+    return 0;
 }

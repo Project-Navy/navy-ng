@@ -32,22 +32,26 @@ void context_create(Context *ctx, uintptr_t ip, TaskArgs args)
     ctx->syscall_kernel_bstack = (uintptr_t) malloc(STACK_SIZE);
     ctx->syscall_kernel_stack = ctx->syscall_kernel_bstack + STACK_SIZE;
 
-    simd_ctx_init(ctx->simd);
+    // simd_ctx_init(ctx->simd);
 
     UNLOCK(ctx);
 }
 
 void context_save(Context *ctx, Regs *regs)
 {
-    simd_ctx_save(ctx->simd);
+    // simd_ctx_save(ctx->simd);
     ctx->regs = *regs;
 }
 
 void context_switch(Context *ctx, Regs *regs)
 {
+    LOCK(ctx);
+    
     asm_write_msr(MSR_GS_BASE, (uintptr_t) ctx);
     asm_write_msr(MSR_KERN_GS_BASE, (uintptr_t) ctx);
 
     *regs = ctx->regs;
-    simd_ctx_load(ctx->simd);
+
+    UNLOCK(ctx);
+    // simd_ctx_load(ctx->simd);
 }

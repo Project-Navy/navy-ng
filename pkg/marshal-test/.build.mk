@@ -1,0 +1,2 @@
+MARSHAL_NAME = marshal-test
+HOST_PKGS += MARSHAL

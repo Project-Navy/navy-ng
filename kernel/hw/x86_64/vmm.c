@@ -97,8 +97,6 @@ void vmm_switch_space(Pml *pml)
 {
     LOCK(vmm);
 
-    log$("Addr: {a}", (uintptr_t) pml);
-
     write_cr3(mmap_kernel_to_phys((uintptr_t) pml));
 
     UNLOCK(vmm);

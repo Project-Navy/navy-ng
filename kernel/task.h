@@ -10,7 +10,7 @@
 #include <navy/vec.h>
 #include <brutal/result.h>
 #include <brutal/str.h>
-#include <sys/types.h>
+#include <unistd.h>
 
 
 typedef enum 
@@ -18,7 +18,8 @@ typedef enum
     TASK_RUNNING,
     TASK_IDLE,
     TASK_BLOCKED,
-    TASK_DEAD
+    TASK_DEAD,
+    TASK_GONNADIE
 } TaskState;
 
 typedef struct 

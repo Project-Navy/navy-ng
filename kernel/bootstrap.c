@@ -27,6 +27,10 @@ int bootstrap(Handover *handover)
 
     sched_push_task(test);
 
-    for(;;);
+    for (;;)
+    {
+        sched_idle();
+    }
+
     return 0;
 }

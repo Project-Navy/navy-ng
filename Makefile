@@ -24,7 +24,7 @@ QEMUFLAGS := \
 	-enable-kvm \
 	-no-shutdown
 
-STD_CFLAGS = \
+STD_CFLAGS_HOST = \
 	-Wall \
 	-ggdb \
 	-Wextra \
@@ -34,6 +34,15 @@ STD_CFLAGS = \
 	-MD \
 	-Ilib/ \
 	-D__$(CONFIG_ARCH)__
+
+STD_CFLAGS = \
+	$(STD_CFLAGS_HOST) \
+	-mno-80387 \
+	-mno-mmx \
+	-mno-3dnow \
+	-mno-sse \
+	-mno-sse2 \
+	-mno-red-zone \
 
 BINS :=
 

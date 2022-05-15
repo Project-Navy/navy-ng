@@ -24,7 +24,7 @@ void hardware_init(Handover *handover)
 {
     gdt_init();
     idt_init();
-    simd_init();
+    // simd_init();
     pmm_init(handover);
     vmm_init(handover);
     intstack_init();

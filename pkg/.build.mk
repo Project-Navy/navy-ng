@@ -1,20 +1,22 @@
 LIBS_HOST_SRC = \
 	$(wildcard lib/navy/*.c) \
 	$(wildcard lib/lison/*.c) \
-	$(wildcard lib/brutal/*.c)
+	$(wildcard lib/brutal/*.c) \
+	$(wildcard lib/cpython/*.c)
 
 LIBS_HOST_OBJ = \
 	$(patsubst %, $(BINDIR_HOST)/%.o, $(LIBS_HOST_SRC))
 
 HOST_CFLAGS := \
-	$(STD_CFLAGS) \
+	$(STD_CFLAGS_HOST) \
 	-fsanitize=undefined \
 	-fsanitize=address \
 	-DHOST
 
 HOST_LDFLAGS := \
 	-fsanitize=undefined \
-	-fsanitize=address 
+	-fsanitize=address \
+	-lm
 
 NAVY_CFLAGS := \
 	$(STD_CFLAGS) \
