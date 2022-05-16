@@ -9,6 +9,7 @@ LIBS_HOST_OBJ = \
 
 HOST_CFLAGS := \
 	$(STD_CFLAGS_HOST) \
+	-ggdb \
 	-fsanitize=undefined \
 	-fsanitize=address \
 	-DHOST
