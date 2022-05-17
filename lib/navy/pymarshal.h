@@ -5,8 +5,19 @@
 
 #include <navy/reader.h>
 #include <navy/option.h>
+#include <brutal/str.h>
 
 #define FLAG_REF '\x80'
+
+#define r_string(N, self) (                                     \
+    {                                                           \
+        StrFix(N) dst_str = {};                                 \
+        memcpy(dst_str.buf, (self)->buf + (self)->offset, N);   \
+        dst_str.len = N;                                        \
+        reader_move((self), N);                                 \
+        dst_str;                                                \
+    })
+
 
 typedef enum 
 {
@@ -48,10 +59,13 @@ typedef struct
     union 
     {
         double _float;
+        int64_t _int;
+        Str _str;
     };
 } MarshalObject;
 
 typedef Reader(uint8_t *) MarshalReader;
 typedef Option(MarshalObject) MarshalObjectOption;
+typedef Option(int64_t) IntOption;
 
 MarshalObjectOption marshal_r_object(MarshalReader *self);

@@ -33,6 +33,7 @@ STD_CFLAGS_HOST = \
 	-Wvla \
 	-MD \
 	-Ilib/ \
+	-Dauto=__auto_type \
 	-D__$(CONFIG_ARCH)__
 
 STD_CFLAGS = \

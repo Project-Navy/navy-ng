@@ -128,10 +128,3 @@ bool str_any(Str const str)
 {
     return str.len != 0;
 }
-
-Str str_sub(Str str, size_t start, size_t end)
-{
-    char *tmp = (char *) str.buf;
-    tmp[end] = '\0';
-    return str$(tmp + start);
-}

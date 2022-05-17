@@ -111,7 +111,5 @@ static inline Str str_make_from_str_fix128(StrFix128 const *str_fix) { return (S
         dst_str;                                        \
     })
 
-Str str_sub(Str str, size_t start, size_t end);
-
-/*#define str_sub(str, start, end) \
-    str_n$((end) - (start), (char *)str.buf + (start))*/
+#define str_sub(str, start, end) \
+    str_n$((end) - (start), (char *)str.buf + (start))

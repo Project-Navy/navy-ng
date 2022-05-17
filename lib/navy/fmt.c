@@ -17,8 +17,8 @@ struct fmt_value fmtvald(int64_t val)
 struct fmt_value fmtvals(char const *val)
 {
     return (struct fmt_value){
-        .type = FMT_STRING,
-        {.as_str = val},
+        .type = FMT_CSTRING,
+        {.as_cstr = val},
     };
 }
 
@@ -26,7 +26,7 @@ struct fmt_value fmtvalbs(Str val)
 {
     return (struct fmt_value){
         .type = FMT_STRING,
-        {.as_str = val.buf},
+        {.as_str = val},
     };
 }
 
@@ -34,7 +34,7 @@ struct fmt_value fmtvalbs128(StrFix128 val)
 {
     return (struct fmt_value){
         .type = FMT_STRING,
-        {.as_str = val.buf},
+        {.as_str = str$(val.buf)},
     };
 }
 
@@ -166,7 +166,19 @@ void PRINT_FORMAT(void (*callback)(char const *s), char const *format, struct fm
 
                     case FMT_STRING:
                     {
-                        callback(args.values[current_value].as_str);
+                        for (size_t i = 0; i < args.values[current_value].as_str.len; i++)
+                        {
+                            char buf[2] = {0};
+                            buf[0] = args.values[current_value].as_str.buf[i];
+                            callback(buf);
+                        }
+
+                        break;
+                    }
+
+                    case FMT_CSTRING:
+                    {
+                        callback(args.values[current_value].as_cstr);
                         break;
                     }
 

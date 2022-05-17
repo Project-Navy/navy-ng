@@ -44,6 +44,7 @@
 enum fmt_type
 {
     FMT_CHAR,
+    FMT_CSTRING,
     FMT_STRING,
     FMT_DECIMAL
 };
@@ -54,7 +55,8 @@ struct fmt_value
     union
     {
         int64_t as_decimal;
-        char const *as_str;
+        char const *as_cstr;
+        Str as_str;
         char as_chr;
     };
 };

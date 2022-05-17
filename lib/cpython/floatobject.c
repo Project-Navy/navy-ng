@@ -3,8 +3,8 @@
 #include <math.h>
 
 // FIXME
-static float_format_type double_format = ieee_little_endian_format;
-static float_format_type float_format = ieee_little_endian_format;
+static float_format_type double_format = unknown_format;
+static float_format_type float_format = unknown_format;
 //
 
 DoubleOption

@@ -20,5 +20,6 @@
 #define reader_current(r) reader_peek(r, r->offset)
 #define reader_next(r) reader_peek(r, r->offset++)
 #define reader_eof(r) ((r)->offset >= (r)->length)
+#define reader_move(r, n) (r)->offset += n
 
 typedef Reader(Str *) ReaderStr;

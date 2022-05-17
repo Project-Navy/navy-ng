@@ -8,5 +8,6 @@
 -Ikernel/
 -I.
 -D__x86_64__
+-Dauto=__auto_type
 -DKERNEL
 -std=gnu2x
