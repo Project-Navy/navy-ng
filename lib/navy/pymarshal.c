@@ -49,7 +49,6 @@ static void r_code(MarshalReader *self)
 MarshalObjectOption marshal_r_object(MarshalReader *self)
 {
     uint8_t code = reader_next(self);
-    log$("{}", code);
     // uint8_t flag = code & FLAG_REF;
     uint8_t type = code & ~FLAG_REF;
     MarshalObject ret = {.type = type};

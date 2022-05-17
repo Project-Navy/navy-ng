@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include "macro.h"
 
+#define FLOAT_PRECISION 6
+
 #define SELECT_VALUE(VALUE) \
     _Generic(\
     (VALUE), \
@@ -23,6 +25,7 @@
     char const*: fmtvals, \
     Str: fmtvalbs, \
     StrFix128: fmtvalbs128, \
+    double: fmtvalf, \
     char: fmtvalc)(VALUE),
 
 #define PRINT_ARGS_(...)                                                                           \
@@ -46,7 +49,8 @@ enum fmt_type
     FMT_CHAR,
     FMT_CSTRING,
     FMT_STRING,
-    FMT_DECIMAL
+    FMT_DECIMAL,
+    FMT_FLOAT
 };
 
 struct fmt_value
@@ -58,6 +62,7 @@ struct fmt_value
         char const *as_cstr;
         Str as_str;
         char as_chr;
+        double as_float;
     };
 };
 
@@ -74,6 +79,7 @@ struct fmt_args
     struct fmt_value *values;
 };
 
+struct fmt_value fmtvalf(double val);
 struct fmt_value fmtvald(int64_t val);
 struct fmt_value fmtvals(char const *val);
 struct fmt_value fmtvalbs(Str val);

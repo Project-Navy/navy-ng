@@ -6,6 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+struct fmt_value fmtvalf(double val)
+{
+    return (struct fmt_value){
+        .type = FMT_FLOAT,
+        {.as_float = val},
+    };
+}
+
 struct fmt_value fmtvald(int64_t val)
 {
     return (struct fmt_value){
@@ -186,6 +194,31 @@ void PRINT_FORMAT(void (*callback)(char const *s), char const *format, struct fm
                     {
                         char_buffer[0] = args.values[current_value].as_chr;
                         callback(char_buffer);
+                        break;
+                    }
+
+                    case FMT_FLOAT:
+                    {
+                        int64_t integer_part = (int64_t) args.values[current_value].as_float;
+                        char buffer[256] = {0};
+                        itoa(integer_part, buffer, 10);
+                        callback(buffer);
+
+                        callback(".");
+                        double floating_part = args.values[current_value].as_float - integer_part;
+
+                        for (size_t i = 0; i < FLOAT_PRECISION && floating_part; i++)
+                        {
+                            floating_part *= 10;
+                            integer_part = (int64_t) floating_part;
+
+                            floating_part -= integer_part;
+
+                            memset(buffer, 0, 256);
+                            itoa(integer_part, buffer, 10);
+                            callback(buffer);
+                        }
+
                         break;
                     }
 
