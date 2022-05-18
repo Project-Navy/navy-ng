@@ -5,6 +5,7 @@
 
 #include <navy/reader.h>
 #include <navy/option.h>
+#include <navy/vec.h>
 #include <brutal/str.h>
 
 #define FLAG_REF '\x80'
@@ -52,7 +53,9 @@ typedef enum
     TYPE_SHORT_ASCII_INTERNED = 'Z',
 } MarshalType;
 
-typedef struct 
+typedef Vec(struct marshal_object) MarshalVec;
+
+typedef struct marshal_object
 {
     MarshalType type;
 
@@ -61,6 +64,7 @@ typedef struct
         double _float;
         int64_t _int;
         Str _str;
+        MarshalVec _vec;
     };
 } MarshalObject;
 

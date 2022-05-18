@@ -1,4 +1,5 @@
 #include "pymarshal.h"
+#include "navy/reader.h"
 
 #include <assert.h>
 #include <navy/debug.h>
@@ -42,16 +43,29 @@ static void r_code(MarshalReader *self)
 
     MAYBE_UNUSED MarshalObject code = UNWRAP(marshal_r_object(self));
     MAYBE_UNUSED MarshalObject consts = UNWRAP(marshal_r_object(self)); 
-    // MAYBE_UNUSED MarshalObject names = UNWRAP(marshal_r_object(self));
-    // MAYBE_UNUSED MarshalObject localsplusnames = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject names = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject localsplusnames = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject localspluskinds = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject filename = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject name = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED MarshalObject qualname = UNWRAP(marshal_r_object(self));
+    MAYBE_UNUSED int firstlineno = UNWRAP(r_long(self));
+    MAYBE_UNUSED MarshalObject linetable = UNWRAP(marshal_r_object(self));
 }
 
 MarshalObjectOption marshal_r_object(MarshalReader *self)
 {
+    if (reader_eof(self))
+    {
+        return NONE(MarshalObjectOption);
+    }
+
     uint8_t code = reader_next(self);
     // uint8_t flag = code & FLAG_REF;
     uint8_t type = code & ~FLAG_REF;
     MarshalObject ret = {.type = type};
+
+    log$("{} -> {}", code, type);
 
     if (reader_eof(self))
     {
@@ -94,6 +108,7 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
             break;
         }
 
+        case TYPE_SHORT_ASCII_INTERNED:
         case TYPE_SHORT_ASCII: 
         {
             uint8_t n = reader_next(self);
@@ -103,9 +118,32 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
             break;
         }
 
+        case TYPE_SMALL_TUPLE: 
+        {
+            uint8_t n = reader_next(self);
+            MarshalVec vec;
+
+            vec_init(&vec);
+            for (size_t i = 0; i < n; i++)
+            {
+                vec_push(&vec, UNWRAP(marshal_r_object(self)));
+            }
+
+            ret._vec = vec;
+            break;
+        }
+
+        case TYPE_REF:
+        {
+            MAYBE_UNUSED uint8_t n = reader_next(self);
+            reader_move(self, 3);
+            // TODO
+            break;
+        }
+
         default:
         {
-            log$("Unknown opcode {x} ({})", type, (char) type);
+            log$("Unknown opcode {} ({})", type, (char) type);
             return NONE(MarshalObjectOption);
         }
     }
