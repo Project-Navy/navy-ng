@@ -31,26 +31,29 @@ static IntOption r_long(MarshalReader *self)
 }
 
 
-static void r_code(MarshalReader *self)
+static MarshalCode r_code(MarshalReader *self)
 {
     reader_move(self, 4);
+    MarshalCode code;
 
-    MAYBE_UNUSED int argcount = (int) UNWRAP(r_long(self));
-    MAYBE_UNUSED int posonlyargcount = (int) UNWRAP(r_long(self));
-    MAYBE_UNUSED int kwonlyargcount = (int) UNWRAP(r_long(self));
-    MAYBE_UNUSED int stacksize = (int) UNWRAP(r_long(self));
-    MAYBE_UNUSED int flags = (int) UNWRAP(r_long(self));
+    code.argcount = (int) UNWRAP(r_long(self));
+    code.posonlyargcount = (int) UNWRAP(r_long(self));
+    code.kwonlyargcount = (int) UNWRAP(r_long(self));
+    code.stacksize = (int) UNWRAP(r_long(self));
+    code.flags = (int) UNWRAP(r_long(self));
 
-    MAYBE_UNUSED MarshalObject code = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject consts = UNWRAP(marshal_r_object(self)); 
-    MAYBE_UNUSED MarshalObject names = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject localsplusnames = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject localspluskinds = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject filename = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject name = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED MarshalObject qualname = UNWRAP(marshal_r_object(self));
-    MAYBE_UNUSED int firstlineno = UNWRAP(r_long(self));
-    MAYBE_UNUSED MarshalObject linetable = UNWRAP(marshal_r_object(self));
+    code.code = UNWRAP(marshal_r_object(self));
+    code.consts = UNWRAP(marshal_r_object(self)); 
+    code.names = UNWRAP(marshal_r_object(self));
+    code.localsplusnames = UNWRAP(marshal_r_object(self));
+    code.localspluskinds = UNWRAP(marshal_r_object(self));
+    code.filename = UNWRAP(marshal_r_object(self));
+    code.name = UNWRAP(marshal_r_object(self));
+    code.qualname = UNWRAP(marshal_r_object(self));
+    code.firstlineno = UNWRAP(r_long(self));
+    code.linetable = UNWRAP(marshal_r_object(self));
+
+    return code;
 }
 
 MarshalObjectOption marshal_r_object(MarshalReader *self)
@@ -95,7 +98,8 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
 
         case TYPE_CODE:
         {
-            r_code(self);
+            ret._code = malloc(sizeof(MarshalCode));
+            *ret._code = r_code(self);
             break;
         }
 

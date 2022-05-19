@@ -22,4 +22,6 @@
 #define reader_eof(r) ((r)->offset >= (r)->length)
 #define reader_move(r, n) (r)->offset += n
 
-typedef Reader(Str *) ReaderStr;
+typedef Reader(Str) ReaderStr;
+typedef Reader(Str *) ReaderStrArray;
+typedef Reader(char const *) ReaderCStr;

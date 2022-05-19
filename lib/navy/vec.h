@@ -34,4 +34,4 @@ void vec_expand_(char **data, size_t *length, size_t *capacity, int memsz);
 
 typedef Vec(char) VecChar;
 typedef Vec(Str) VecStr;
-typedef Vec(char *) VecCstr;
+typedef Vec(char *) VecCStr;

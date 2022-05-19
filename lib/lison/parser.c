@@ -7,9 +7,9 @@
 #include <navy/debug.h>
 
 static size_t line_count;
-static Lison read_form(ReaderStr *r);
+static Lison read_form(ReaderStrArray *r);
 
-static Lison read_list(ReaderStr *r)
+static Lison read_list(ReaderStrArray *r)
 {
     Lison tokens;
     bool is_list = false;
@@ -68,7 +68,7 @@ static Lison read_list(ReaderStr *r)
     return tokens;
 }
 
-static Lison read_atom(ReaderStr *r)
+static Lison read_atom(ReaderStrArray *r)
 {
     Str token = reader_next(r);
     Lison tok = lison_nil;
@@ -114,7 +114,7 @@ static Lison read_atom(ReaderStr *r)
     return tok;
 }
 
-static Lison read_form(ReaderStr *r)
+static Lison read_form(ReaderStrArray *r)
 {
     Str token = reader_current(r);
 
@@ -151,7 +151,7 @@ Lison lison_parse_str(Str s)
 {
     line_count = str_count_chr(s, '\n') + 1;
     VecStr tokens = lison_lex_str(s);
-    ReaderStr reader;
+    ReaderStrArray reader;
 
     reader_init(&reader, tokens.data, tokens.length);
 

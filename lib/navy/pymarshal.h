@@ -65,8 +65,29 @@ typedef struct marshal_object
         int64_t _int;
         Str _str;
         MarshalVec _vec;
+        struct marshal_code *_code;
     };
 } MarshalObject;
+
+typedef struct marshal_code
+{
+    int argcount;
+    int posonlyargcount;
+    int kwonlyargcount;
+    int stacksize;
+    int flags;
+    MarshalObject code;
+    MarshalObject consts;
+    MarshalObject names;
+    MarshalObject localsplusnames;
+    MarshalObject localspluskinds;
+    MarshalObject filename;
+    MarshalObject name;
+    MarshalObject qualname;
+    int firstlineno;
+    MarshalObject linetable;
+} MarshalCode;
+
 
 typedef Reader(uint8_t *) MarshalReader;
 typedef Option(MarshalObject) MarshalObjectOption;
