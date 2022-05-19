@@ -1,1 +1,2 @@
-debug_log("Bonjour le monde !")
+a = 42
+debug_log(a)

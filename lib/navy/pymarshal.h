@@ -52,6 +52,7 @@ typedef enum
     TYPE_SMALL_TUPLE = ')',
     TYPE_SHORT_ASCII = 'z',
     TYPE_SHORT_ASCII_INTERNED = 'Z',
+    TYPE_BUILTIN = '%'
 } MarshalType;
 
 typedef Vec(struct marshal_object) MarshalVec;
@@ -67,6 +68,7 @@ typedef struct marshal_object
         Str _str;
         MarshalVec _vec;
         struct marshal_code *_code;
+        struct marshal_object (*_builtin)(MarshalVec);
     };
 } MarshalObject;
 
@@ -94,7 +96,8 @@ typedef MarshalObject (*PyBuiltin)(MarshalVec);
 typedef Reader(uint8_t *) MarshalReader;
 typedef Option(MarshalObject) MarshalObjectOption;
 typedef Option(int64_t) IntOption;
-typedef map_t(PyBuiltin) MarshalMap;
+typedef map_t(PyBuiltin) BuiltinMap;
+typedef map_t(MarshalObject) MarshalMap;
 
 MarshalObjectOption marshal_r_object(MarshalReader *self);
 void marshal_free(MarshalObject *obj);

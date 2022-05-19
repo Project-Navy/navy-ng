@@ -17,6 +17,13 @@ static MarshalObject debug_log(MarshalVec args)
                 log$("{}", args.data[i]._str);
                 break;
             }
+
+            case TYPE_INT:
+            {
+                log$("{}", args.data[i]._int);
+                break;
+            }
+
             default:
             {
                 panic$("{} not supported", args.data[i].type);
@@ -27,9 +34,9 @@ static MarshalObject debug_log(MarshalVec args)
     return (MarshalObject) {.type = TYPE_NONE};
 }
 
-static MarshalMap builtins(void)
+static BuiltinMap builtins(void)
 {
-    MarshalMap builtins;
+    BuiltinMap builtins;
 
     map_init(&builtins);
 
@@ -42,9 +49,11 @@ MarshalObjectOption py_run(MarshalCode code)
 {
     MarshalVec stack;
     ReaderCStr codeReader;
-    MarshalMap funcbuiltin = builtins();
+    BuiltinMap funcbuiltin = builtins();
+    MarshalMap locals;
 
     vec_init(&stack);
+    map_init(&locals);
     reader_init(&codeReader, code.code._str.buf, code.code._str.len);
 
     while (!reader_eof(&codeReader))
@@ -56,7 +65,35 @@ MarshalObjectOption py_run(MarshalCode code)
         {
             case LOAD_NAME:
             {
-                vec_push(&stack, code.names._vec.data[arg]);
+                MarshalObject obj = {.type = TYPE_NULL};
+
+                Str funcname = code.names._vec.data[arg]._str;
+                if (strlen(funcname.buf) != funcname.len)
+                {
+                    funcname.buf[funcname.len] = 0;
+                }
+
+                PyBuiltin *func = map_get(&funcbuiltin, funcname.buf);
+                MarshalObject *local = map_get(&locals, funcname.buf);
+
+                if (func != NULL)
+                {
+                    obj.type = TYPE_BUILTIN;
+                    obj._builtin = *func;
+                }
+
+                if(local != NULL)
+                {
+                    obj = *local;
+                }
+
+                if (obj.type == TYPE_NULL)
+                {
+                    panic$("{} is not defined", code.names._vec.data[arg]._str);
+                }
+
+                vec_push(&stack, obj);
+
                 break;
             }
 
@@ -78,24 +115,29 @@ MarshalObjectOption py_run(MarshalCode code)
 
                 MarshalObject func = vec_pop(&stack);
 
-                if (strlen(func._str.buf) != func._str.len)
+                if (func.type != TYPE_BUILTIN)
                 {
-                    func._str.buf[func._str.len] = 0;
-                }
-
-                PyBuiltin *funcptr = map_get(&funcbuiltin, func._str.buf);
-
-                if (funcptr != NULL)
-                {
-                    (*funcptr)((args));
-                    vec_free(&args);
+                    panic$("TODO !");
                 }
                 else  
                 {
-                    panic$("{} is not defined", func._str);
+                    vec_push(&stack, func._builtin(args));
                 }
 
-                // TODO
+                vec_free(&args);
+
+                break;
+            }
+
+            case STORE_NAME:
+            {
+                Str name = code.names._vec.data[arg]._str;
+                if (strlen(name.buf) != name.len)
+                {
+                    name.buf[name.len] = 0;
+                }
+
+                map_set(&locals, name.buf, vec_pop(&stack));
                 break;
             }
 
@@ -114,6 +156,7 @@ MarshalObjectOption py_run(MarshalCode code)
                 MarshalObject ret = vec_pop(&stack);
                 vec_free(&stack);
                 map_deinit(&funcbuiltin);
+                map_deinit(&locals);
                 return SOME(MarshalObjectOption, ret);
             }
             
@@ -124,5 +167,7 @@ MarshalObjectOption py_run(MarshalCode code)
         }
     }
 
+    map_deinit(&funcbuiltin);
+    map_deinit(&locals);
     return NONE(MarshalObjectOption);
 }
