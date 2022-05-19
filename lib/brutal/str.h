@@ -21,7 +21,7 @@ typedef struct
 typedef struct
 {
     size_t len;
-    const char *buf;
+    char *buf;
 } Str;
 
 #define nullstr str$("")

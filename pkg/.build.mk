@@ -2,7 +2,8 @@ LIBS_HOST_SRC = \
 	$(wildcard lib/navy/*.c) \
 	$(wildcard lib/lison/*.c) \
 	$(wildcard lib/brutal/*.c) \
-	$(wildcard lib/cpython/*.c)
+	$(wildcard lib/cpython/*.c) \
+	$(wildcard lib/rxi/*.c)
 
 LIBS_HOST_OBJ = \
 	$(patsubst %, $(BINDIR_HOST)/%.o, $(LIBS_HOST_SRC))

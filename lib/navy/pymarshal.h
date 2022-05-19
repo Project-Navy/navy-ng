@@ -7,6 +7,7 @@
 #include <navy/option.h>
 #include <navy/vec.h>
 #include <brutal/str.h>
+#include <rxi/map.h>
 
 #define FLAG_REF '\x80'
 
@@ -89,8 +90,11 @@ typedef struct marshal_code
 } MarshalCode;
 
 
+typedef MarshalObject (*PyBuiltin)(MarshalVec);
 typedef Reader(uint8_t *) MarshalReader;
 typedef Option(MarshalObject) MarshalObjectOption;
 typedef Option(int64_t) IntOption;
+typedef map_t(PyBuiltin) MarshalMap;
 
 MarshalObjectOption marshal_r_object(MarshalReader *self);
+void marshal_free(MarshalObject *obj);

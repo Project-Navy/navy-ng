@@ -4,4 +4,4 @@
 #include <navy/reader.h>
 #include <navy/vec.h>
 
-void py_run(MarshalCode code);
+MarshalObjectOption py_run(MarshalCode code);

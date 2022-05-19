@@ -68,8 +68,6 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
     uint8_t type = code & ~FLAG_REF;
     MarshalObject ret = {.type = type};
 
-    log$("{} -> {}", code, type);
-
     if (reader_eof(self))
     {
         return NONE(MarshalObjectOption);
@@ -108,6 +106,7 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
             size_t n = UNWRAP(r_long(self));
             Str buffer = str$(self->buf);
             ret._str = str_sub(buffer, self->offset, self->offset + n);
+
             reader_move(self, n);
             break;
         }
@@ -118,6 +117,7 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
             uint8_t n = reader_next(self);
             Str buffer = str$(self->buf);
             ret._str = str_sub(buffer, self->offset, self->offset + n);
+
             reader_move(self, n);
             break;
         }
@@ -147,10 +147,28 @@ MarshalObjectOption marshal_r_object(MarshalReader *self)
 
         default:
         {
-            log$("Unknown opcode {} ({})", type, (char) type);
+            panic$("Unknown opcode {} ({})", type, (char) type);
             return NONE(MarshalObjectOption);
         }
     }
 
     return SOME(MarshalObjectOption, ret);
+}
+
+void marshal_free(MarshalObject *obj)
+{
+    switch(obj->type)
+    {
+        case TYPE_CODE:
+        {
+            vec_free(&obj->_code->consts._vec);
+            vec_free(&obj->_code->names._vec);
+            free(obj->_code);
+            break;
+        }
+
+        default:
+        {
+        }
+    }
 }

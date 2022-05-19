@@ -17,11 +17,10 @@
     (memset((r), 0, sizeof(*(r))), (r)->buf = (t), (r)->length = (l))
 
 #define reader_peek(r, i) (r)->buf[(i)]
-#define reader_current(r) reader_peek(r, r->offset)
-#define reader_next(r) reader_peek(r, r->offset++)
+#define reader_current(r) reader_peek(r, (r)->offset)
+#define reader_next(r) reader_peek(r, (r)->offset++)
 #define reader_eof(r) ((r)->offset >= (r)->length)
 #define reader_move(r, n) (r)->offset += n
 
-typedef Reader(Str) ReaderStr;
 typedef Reader(Str *) ReaderStrArray;
 typedef Reader(char const *) ReaderCStr;
