@@ -1,2 +1,3 @@
 a = 42
-debug_log(a)
+b = 27
+debug_log(a + b)

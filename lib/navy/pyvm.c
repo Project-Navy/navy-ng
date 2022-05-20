@@ -159,6 +159,13 @@ MarshalObjectOption py_run(MarshalCode code)
                 map_deinit(&locals);
                 return SOME(MarshalObjectOption, ret);
             }
+
+            case BINARY_ADD:
+            {
+                int64_t tos = vec_pop(&stack)._int;
+                stack.data[stack.length - 1]._int += tos;
+                break;
+            }
             
             default: 
             {
