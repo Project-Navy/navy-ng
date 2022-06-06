@@ -4,6 +4,10 @@
 
 int main(void)
 {
-    log$("Hello, World !");
+    for (size_t i = 0; i < 10; i++)
+    {
+        log$("Hello, World !");
+    }
+
     return 0;
 }

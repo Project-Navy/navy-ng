@@ -72,7 +72,9 @@ $(1)_NAVY_SRC = \
 	$(shell find ./pkg/$($(1)_NAME) -name "*.c") \
 	$(shell find ./lib/ansi -name "*.c") \
 	$(shell find ./lib/navy -name "*.c") \
-	$(shell find ./lib/brutal -name "*.c") 
+	$(shell find ./lib/brutal -name "*.c") \
+	$(wildcard lib/rxi/*.c) \
+	$(wildcard lib/cpython/*.c)
 
 $(1)_NAVY_OBJ = $$(patsubst /%, $(BINDIR_NAVY)/%.o, $$($(1)_NAVY_SRC))
 $(1)_NAVY_BIN = $(BINDIR_NAVY)/$($(1)_NAME)

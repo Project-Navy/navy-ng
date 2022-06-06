@@ -197,6 +197,7 @@ void PRINT_FORMAT(void (*callback)(char const *s), char const *format, struct fm
                         break;
                     }
 
+                    #ifdef HOST
                     case FMT_FLOAT:
                     {
                         int64_t integer_part = (int64_t) args.values[current_value].as_float;
@@ -221,6 +222,7 @@ void PRINT_FORMAT(void (*callback)(char const *s), char const *format, struct fm
 
                         break;
                     }
+                    #endif
 
                     default:
                     {

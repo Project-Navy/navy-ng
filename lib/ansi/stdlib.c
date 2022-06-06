@@ -108,4 +108,14 @@ void *realloc(void *ptr, size_t size)
 {
     return (void *) syscall(SYS_REALLOC, (uintptr_t) ptr, size);
 }
+
+void *malloc(size_t size)
+{
+    return (void *) syscall(SYS_ALLOC, size);
+}
+
+void free(void *ptr)
+{
+    syscall(SYS_FREE, (uintptr_t) ptr);
+}
 #endif
