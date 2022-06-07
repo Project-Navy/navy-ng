@@ -6,12 +6,14 @@
 
 #include "arch.h"
 
+#include <navy/ipc.h>
 #include <navy/range.h>
 #include <navy/vec.h>
 #include <brutal/result.h>
 #include <brutal/str.h>
 #include <unistd.h>
 
+typedef Vec(Ipc) VecIpc;
 
 typedef enum 
 {
@@ -31,9 +33,9 @@ typedef struct
 
     TaskState state;
     int return_value;
+    VecIpc mailbox;
     Context context;
 } Task;
-
 
 typedef Vec(Task *) TaskQueue;
 typedef Option(Task *) TaskOption;

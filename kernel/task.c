@@ -8,6 +8,7 @@
 Task *create_task(Str name, PmlOption space)
 {
     Task *self = (Task *) calloc(sizeof(Task), 1);
+    vec_init(&self->mailbox);
     self->state = TASK_RUNNING;
     self->name = name;
     self->stack = UNWRAP_OR_PANIC(pmm_alloc(STACK_SIZE), "Out of memory");

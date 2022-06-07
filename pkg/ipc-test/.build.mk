@@ -1,0 +1,2 @@
+IPC_TEST_NAME = ipc-test
+NAVY_PKGS += IPC_TEST

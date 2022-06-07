@@ -97,10 +97,23 @@ void sched_idle(void)
         if (task->state == TASK_DEAD && task->context.syscall_kernel_bstack != 0)
         {
             free((void *) task->context.syscall_kernel_bstack);
+            vec_free(&task->mailbox);
             task->context.syscall_kernel_bstack = 0;
         }
 
         UNLOCK(scheduler);
     }
 
+}
+
+TaskOption sched_get_by_pid(pid_t pid)
+{
+    if (tasks.length >= (size_t) pid && tasks.data[pid]->state == TASK_RUNNING)
+    {
+        return SOME(TaskOption, tasks.data[pid]);
+    }
+    else  
+    {
+        return NONE(TaskOption);
+    }
 }

@@ -25,7 +25,17 @@ int bootstrap(Handover *handover)
         "Couldn't create a task with the test binary"
     );
 
+    Task *test2 = UNWRAP_OR_PANIC(
+        load_elf_module(
+            test_module,
+            (TaskArgs) {}
+        ),
+
+        "Couldn't create a task with the test binary"
+    );
+
     sched_push_task(test);
+    sched_push_task(test2);
 
     for (;;)
     {
