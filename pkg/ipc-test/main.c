@@ -1,5 +1,8 @@
 #include <navy/ipc.h>
 #include <navy/debug.h>
+#include <navy/shared_memory.h>
+
+#include <string.h>
 
 int main(void)
 {
@@ -7,15 +10,20 @@ int main(void)
 
     if (getpid() == 1)
     {
-        Ipc msg = (Ipc) {
+        char const *test = "Yes it works !";
+        SharedMemory *mem = shared_memory_create(strlen(test) + 1);
+        void *buf = (void *) mem->range.base;
+
+        memset(buf, 0, mem->range.length);
+        memcpy(buf, test, mem->range.length);
+        
+        Ipc msg = {
             .receiver = 2,
-            .type = IPC_STR,
-            ._str = str$("Hello from sender !")
+            .type = IPC_SHARED_MEMORY,
+            ._addr = (uintptr_t) mem
         };
 
         ipc_send(&msg);
-        log$("IPC SENT !");
-
         return 0;
     }
     else  
@@ -23,8 +31,10 @@ int main(void)
         Ipc msg;
         ipc_rcv_sync(&msg);
 
-        log$("IPC ! {}", msg._str);
-    }
+        SharedMemory *mem = (SharedMemory *) msg._addr;
+        char const *buf = (char const *) mem->range.base;
 
-    return 0;
+        log$("From shared memory: {}", buf);
+        return 0;
+    }
 }

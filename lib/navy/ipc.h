@@ -2,10 +2,12 @@
 
 #include <unistd.h>
 #include <brutal/str.h>
+#include <navy/shared_memory.h>
 
 enum IPC_TYPE 
 {
-    IPC_STR
+    IPC_STR,
+    IPC_SHARED_MEMORY
 };
 
 typedef struct 
@@ -17,6 +19,7 @@ typedef struct
     union 
     {
         Str _str;
+        uintptr_t _addr;
     };
 } Ipc;
 

@@ -1,10 +1,14 @@
-#include "ansi/unistd.h"
 #include "arch.h"
 #include "sched.h"
 #include "task.h"
+
+#include "hw/x86_64/pmm.h"
+#include "hw/x86_64/vmm.h"
+
+#include <navy/ipc.h>
+#include <navy/shared_memory.h>
 #include <stdint.h>
 #include <unistd.h>
-#include <navy/ipc.h>
 
 typedef int64_t (*Syscall)(Regs *);
 
@@ -56,6 +60,16 @@ int64_t syscall_ipc_rcv_sync(Regs *regs)
     }
 
     *msg = vec_pop(&task->mailbox);
+
+    if (msg->type == IPC_SHARED_MEMORY)
+    {
+        SharedMemory *mem = (SharedMemory *) msg->_addr;
+        Range mem_range = {.base = msg->_addr, .length = sizeof(SharedMemory)};
+
+        vmm_map_range(task->space, mem_range, mem_range, true);
+        vmm_map_range(task->space, mem->range, mem->range, true);   
+    }
+
     return 0;
 }
 
@@ -64,12 +78,35 @@ int64_t syscall_getpid(MAYBE_UNUSED Regs *regs)
     return sched_current_pid();
 }
 
+int64_t syscall_create_shared_mem(Regs *regs)
+{
+    Task *task = sched_current_task();
+    size_t size = regs->rbx;
+    PmmOption buff = pmm_alloc(size);
+
+    if (!buff.succ)
+    {
+        return 1;
+    }
+
+    SharedMemory *mem = (SharedMemory *) malloc(sizeof(SharedMemory));
+    Range mem_range = (Range) {.base = (uintptr_t) mem, .length = sizeof(SharedMemory)};
+    mem->range = UNWRAP(buff);
+    mem->ref_count = 0;
+
+    vmm_map_range(task->space, mem_range, mem_range, true);
+    vmm_map_range(task->space, mem->range, mem->range, true);
+
+    return (uintptr_t) mem;
+}
+
 Syscall syscall_matrix[] = {
     [SYS_LOG] = syscall_log,
     [SYS_EXIT] = syscall_exit,
     [SYS_IPC_SEND] = syscall_ipc_send,
     [SYS_IPC_RCV_SYNC] = syscall_ipc_rcv_sync,
-    [SYS_GETPID] = syscall_getpid
+    [SYS_GETPID] = syscall_getpid,
+    [SYS_CREATE_SHARED_MEM] = syscall_create_shared_mem
 };
 
 int64_t syscall_handler(Regs *regs)

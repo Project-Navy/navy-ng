@@ -2,6 +2,7 @@
 #include "simd.h"
 #include "asm.h"
 #include "gdt.h"
+#include "const.h"
 
 #include <navy/lock.h>
 #include <stdlib.h>

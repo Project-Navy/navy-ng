@@ -47,7 +47,8 @@ enum
     SYS_FREE,
     SYS_REALLOC,
     SYS_EXIT,
-    SYS_GETPID
+    SYS_GETPID,
+    SYS_CREATE_SHARED_MEM,
 };
 
 void sys_log(char const *s);
